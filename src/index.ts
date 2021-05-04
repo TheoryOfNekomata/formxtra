@@ -1,3 +1,8 @@
+const RadioNodeList = global.RadioNodeList || class RadioNodeList {
+	name: string = ''
+	disabled: boolean = false
+}
+
 type HTMLFieldElement
 	= HTMLInputElement
 	| HTMLButtonElement
@@ -5,7 +10,7 @@ type HTMLFieldElement
 	| HTMLTextAreaElement
 
 type FieldNode
-	= RadioNodeList
+	= typeof RadioNodeList
 	| HTMLFieldElement
 
 type HTMLSubmitterElement
@@ -17,18 +22,21 @@ const isFormFieldElement = (el: FieldNode) => {
 		return true
 	}
 	const htmlEl = el as HTMLElement
-	const tagName = htmlEl.tagName.toLowerCase()
-	if (['SELECT', 'TEXTAREA', 'BUTTON'].includes(tagName)) {
+	const tagName = htmlEl.tagName
+	if (['SELECT', 'TEXTAREA'].includes(tagName)) {
 		return true
 	}
 	if (tagName !== 'INPUT') {
 		return false
 	}
 	const inputEl = htmlEl as HTMLInputElement
-	const type = inputEl.type.toLowerCase()
+	const type = inputEl.type
 	const checkedValue = inputEl.getAttribute('value')
 	if (type === 'checkbox' && checkedValue !== null) {
 		return inputEl.checked
+	}
+	if (type === 'submit' || type === 'reset') {
+		return false
 	}
 	return Boolean(inputEl.name)
 }
@@ -95,17 +103,17 @@ const getRadioNodeListResolvedValue = (radioNodeList: RadioNodeList, submitter?:
  */
 const getFieldValue = (el: FieldNode, submitter?: HTMLSubmitterElement) => {
 	if ((el as unknown) instanceof RadioNodeList) {
-		return getRadioNodeListResolvedValue(el as RadioNodeList, submitter)
+		return getRadioNodeListResolvedValue(el as unknown as RadioNodeList, submitter)
 	}
 
 	const fieldEl = el as HTMLFieldElement
 	const tagName = fieldEl.tagName
-	const type = fieldEl.type.toLowerCase()
+	const type = fieldEl.type
 	if (tagName === 'SELECT' && fieldEl.value === '') {
 		return null
 	}
 
-	if (tagName === 'INPUT' && type === 'CHECKBOX') {
+	if (tagName === 'INPUT' && type === 'checkbox') {
 		const inputFieldEl = fieldEl as HTMLInputElement
 		const checkedValue = inputFieldEl.getAttribute('value')
 		if (checkedValue !== null) {
@@ -122,38 +130,47 @@ const getFieldValue = (el: FieldNode, submitter?: HTMLSubmitterElement) => {
 
 /**
  * Returns only named form field elements.
- * @param key - The key from the `form.elements` object.
  * @param el - The element
  */
-const isValidFormField = (key: string, el: FieldNode) => {
+const isValidFormField = (el: FieldNode) => {
 	return (
-		isNaN(Number(key))
+		'name' in el
+		&& typeof el['name'] === 'string'
+		&& el['name'].length > 0
+		&& !('disabled' in el && Boolean(el['disabled']))
 		&& isFormFieldElement(el)
 	)
 }
 
-// TODO handle disabled/readonly fields
 /**
  * Gets the values of all the fields within the form through accessing the DOM nodes.
- * @param form - The form element.
- * @param submitter - The element which triggered the form's submit event.
  */
 const getFormValues = (form: HTMLFormElement, submitter?: HTMLSubmitterElement) => {
+	if (!form) {
+		throw new TypeError('Invalid form element.')
+	}
 	const formElements = form.elements as unknown as Record<string | number, FieldNode>
 	const allFormFieldElements = Object.entries<FieldNode>(formElements)
-	const formFieldElements = allFormFieldElements.filter(([key, el]) => isValidFormField(key, el))
-	return formFieldElements.reduce(
-		(theFormValues, [name, el]) => {
+	const formFieldElements = allFormFieldElements.filter(([, el]) => isValidFormField(el))
+	const fieldValues = formFieldElements.reduce(
+		(theFormValues, [,el]) => {
 			const fieldValue = getFieldValue(el, submitter)
 			if (fieldValue === null) {
 				return theFormValues
 			}
 			return {
-				[name]: fieldValue,
+				[el['name'] as string]: fieldValue,
 			}
 		},
 		{}
 	)
+	if (Boolean(submitter as unknown)) {
+		return {
+			...fieldValues,
+			[(submitter as HTMLSubmitterElement).name]: (submitter as HTMLSubmitterElement).value,
+		}
+	}
+	return fieldValues
 }
 
 export default getFormValues
