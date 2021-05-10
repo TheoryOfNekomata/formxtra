@@ -1,10 +1,11 @@
 import * as fixtures from '../test/utils'
 import getFormValues from '.'
+import {DOMWindow, JSDOM} from 'jsdom';
 
 describe('blank template', () => {
-	let window: fixtures.Window
+	let window: DOMWindow
 	beforeEach(async () => {
-		window = await fixtures.loadTemplate('blank')
+		window = new JSDOM(await fixtures.loadTemplate('blank')).window
 	})
 	it('should have blank form value', () => {
 		const [form] = Array.from(window.document.getElementsByTagName('form'))
@@ -14,9 +15,9 @@ describe('blank template', () => {
 })
 
 describe('single input template', () => {
-	let window: fixtures.Window
+	let window: DOMWindow
 	beforeEach(async () => {
-		window = await fixtures.loadTemplate('single-input')
+		window = new JSDOM(await fixtures.loadTemplate('single-input')).window
 	})
 	it('should have a single form value', () => {
 		const [form] = Array.from(window.document.getElementsByTagName('form'))
@@ -26,9 +27,9 @@ describe('single input template', () => {
 })
 
 describe('single disabled input template', () => {
-	let window: fixtures.Window
+	let window: DOMWindow
 	beforeEach(async () => {
-		window = await fixtures.loadTemplate('single-disabled-input')
+		window = new JSDOM(await fixtures.loadTemplate('single-disabled-input')).window
 	})
 	it('should have blank form value', () => {
 		const [form] = Array.from(window.document.getElementsByTagName('form'))
@@ -38,9 +39,9 @@ describe('single disabled input template', () => {
 })
 
 describe('single readonly input template', () => {
-	let window: fixtures.Window
+	let window: DOMWindow
 	beforeEach(async () => {
-		window = await fixtures.loadTemplate('single-readonly-input')
+		window = new JSDOM(await fixtures.loadTemplate('single-readonly-input')).window
 	})
 	it('should have a single form value', () => {
 		const [form] = Array.from(window.document.getElementsByTagName('form'))
@@ -49,10 +50,10 @@ describe('single readonly input template', () => {
 	})
 })
 
-describe('single input with double submitters template', () => {
-	let window: fixtures.Window
+describe('single input with double button submitters template', () => {
+	let window: DOMWindow
 	beforeEach(async () => {
-		window = await fixtures.loadTemplate('single-input-with-double-submitters')
+		window = new JSDOM(await fixtures.loadTemplate('single-input-with-double-button-submitters')).window
 	})
 	it('should have a single form value', () => {
 		const [form] = Array.from(window.document.getElementsByTagName('form'))
@@ -69,9 +70,9 @@ describe('single input with double submitters template', () => {
 })
 
 describe('single input with double input submitters template', () => {
-	let window: fixtures.Window
+	let window: DOMWindow
 	beforeEach(async () => {
-		window = await fixtures.loadTemplate('single-input-with-double-input-submitters')
+		window = new JSDOM(await fixtures.loadTemplate('single-input-with-double-input-submitters')).window
 	})
 
 	it('should have a single form value', () => {

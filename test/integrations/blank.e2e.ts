@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import getFormValues from '../../src'
+import {makeSearchParams} from '../utils/search';
 
 describe('blank template', () => {
 	beforeEach(() => {
@@ -9,21 +10,20 @@ describe('blank template', () => {
 	})
 
 	it('should have blank form value', () => {
-		let beforeValues;
+		let form;
 		cy
 			.visit('/')
 			.get('form')
 			.then((formResult) => {
-				const [form] = Array.from(formResult);
-				beforeValues = getFormValues(form);
-				form.submit();
-				cy.wait('@submitted')
-				cy.location('search').then(search => {
-					console.log(beforeValues)
-					const before = new URLSearchParams(beforeValues).toString();
-					const after = new URLSearchParams(search).toString();
-					expect(before).to.equal(after);
-				})
+				[form] = Array.from(formResult);
+			})
+			.submit()
+			.wait('@submitted')
+			.location('search')
+			.then(search => {
+				const before = makeSearchParams(getFormValues(form)).toString();
+				const after = new URLSearchParams(search).toString();
+				expect(before).to.equal(after);
 			})
 	});
 })

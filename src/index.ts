@@ -168,40 +168,41 @@ const getFormValues = (form: HTMLFormElement, submitter?: HTMLSubmitterElement) 
 	}
 	const formElements = form.elements as unknown as Record<string | number, FieldNode>
 	const allFormFieldElements = Object.entries<FieldNode>(formElements)
-	const formFieldElements = allFormFieldElements.filter(([, el]) => isValidFormField(el))
+	const formFieldElements = allFormFieldElements.filter(([k, el]) => {
+		return (
+			// get only indexed forms
+			!isNaN(Number(k))
+			&& isValidFormField(el)
+		)
+	})
 	const fieldValues = formFieldElements.reduce(
 		(theFormValues, [,el]) => {
-			const inputEl = el as HTMLInputElement
-			if (inputEl.tagName === 'INPUT' && inputEl.type === 'radio' && !inputEl.checked) {
-				return theFormValues
-			}
-
 			const fieldValue = getFieldValue(el, submitter)
 			if (fieldValue === null) {
 				return theFormValues
 			}
 
 			const fieldName = el['name'] as string;
-			// const { [fieldName]: oldFormValue = null } = theFormValues;
+			const { [fieldName]: oldFormValue = null } = theFormValues;
 
-			// if (oldFormValue === null) {
+			if (oldFormValue === null) {
 				return {
 					...theFormValues,
 					[fieldName]: fieldValue,
 				}
-			// }
-			//
-			// if (!Array.isArray(oldFormValue)) {
-			// 	return {
-			// 		...theFormValues,
-			// 		[fieldName]: [oldFormValue, fieldValue],
-			// 	}
-			// }
-			//
-			// return {
-			// 	...theFormValues,
-			// 	[fieldName]: [...oldFormValue, fieldValue],
-			// }
+			}
+
+			if (!Array.isArray(oldFormValue)) {
+				return {
+					...theFormValues,
+					[fieldName]: [oldFormValue, fieldValue],
+				}
+			}
+
+			return {
+				...theFormValues,
+				[fieldName]: [...oldFormValue, fieldValue],
+			}
 		},
 		{} as any
 	)
