@@ -1,4 +1,4 @@
-import * as fixtures from '../test/fixtures'
+import * as fixtures from '../test/utils'
 import getFormValues from '.'
 
 describe('blank template', () => {

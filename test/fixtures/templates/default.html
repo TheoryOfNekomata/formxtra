@@ -80,5 +80,19 @@
 				</div>
 			</form>
 		</article>
+		<script>
+			Array.from(document.getElementsByClassName('dependents')).forEach(d => {
+				d.addEventListener('click', e => {
+					const container = document.createElement('div')
+					const input = document.createElement('input')
+					input.name = 'dependent'
+					input.type = 'text'
+					input.placeholder = 'Dependent'
+					container.classList.add('additional-dependent')
+					container.appendChild(input)
+					e.target.parentElement.parentElement.insertBefore(container, e.target.parentElement)
+				})
+			})
+		</script>
 	</body>
 </html>

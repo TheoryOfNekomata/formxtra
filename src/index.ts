@@ -109,20 +109,37 @@ const getFieldValue = (el: FieldNode, submitter?: HTMLSubmitterElement) => {
 	const fieldEl = el as HTMLFieldElement
 	const tagName = fieldEl.tagName
 	const type = fieldEl.type
+
+	if (tagName === 'TEXTAREA') {
+		return fieldEl.value.replace(/\n/g, '\r\n')
+	}
+
 	if (tagName === 'SELECT' && fieldEl.value === '') {
 		return null
 	}
 
-	if (tagName === 'INPUT' && type === 'checkbox') {
-		const inputFieldEl = fieldEl as HTMLInputElement
-		const checkedValue = inputFieldEl.getAttribute('value')
-		if (checkedValue !== null) {
-			if (inputFieldEl.checked) {
-				return inputFieldEl.value
+	if (tagName === 'INPUT') {
+		switch (type) {
+		case 'checkbox':
+			const checkboxEl = fieldEl as HTMLInputElement
+			const checkedValue = checkboxEl.getAttribute('value')
+			if (checkedValue !== null) {
+				if (checkboxEl.checked) {
+					return checkboxEl.value
+				}
+				return null
+			}
+			return 'on' // default value
+		case 'radio':
+			const radioEl = fieldEl as HTMLInputElement
+			if (radioEl.checked) {
+				return radioEl.value
 			}
 			return null
+		default:
+			break
 		}
-		return inputFieldEl.checked
+
 	}
 
 	return fieldEl.value
@@ -154,15 +171,39 @@ const getFormValues = (form: HTMLFormElement, submitter?: HTMLSubmitterElement) 
 	const formFieldElements = allFormFieldElements.filter(([, el]) => isValidFormField(el))
 	const fieldValues = formFieldElements.reduce(
 		(theFormValues, [,el]) => {
+			const inputEl = el as HTMLInputElement
+			if (inputEl.tagName === 'INPUT' && inputEl.type === 'radio' && !inputEl.checked) {
+				return theFormValues
+			}
+
 			const fieldValue = getFieldValue(el, submitter)
 			if (fieldValue === null) {
 				return theFormValues
 			}
-			return {
-				[el['name'] as string]: fieldValue,
-			}
+
+			const fieldName = el['name'] as string;
+			// const { [fieldName]: oldFormValue = null } = theFormValues;
+
+			// if (oldFormValue === null) {
+				return {
+					...theFormValues,
+					[fieldName]: fieldValue,
+				}
+			// }
+			//
+			// if (!Array.isArray(oldFormValue)) {
+			// 	return {
+			// 		...theFormValues,
+			// 		[fieldName]: [oldFormValue, fieldValue],
+			// 	}
+			// }
+			//
+			// return {
+			// 	...theFormValues,
+			// 	[fieldName]: [...oldFormValue, fieldValue],
+			// }
 		},
-		{}
+		{} as any
 	)
 	if (Boolean(submitter as unknown)) {
 		return {
