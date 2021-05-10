@@ -2,6 +2,10 @@
 
 Get the value of a form using `HTMLFormElement.elements`.
 
+## Installation
+
+The library is not yet out on any package manager. Installing through the URL is the preferred way.
+
 ## Usage
 
 ```typescript
