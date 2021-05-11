@@ -8,11 +8,9 @@ describe('single input template', () => {
 
 	it('should have single form value', () => {
 		utils.test(
-			(cy: any) => {
-				cy.get('[type="submit"]').click()
-			},
-			(form: HTMLFormElement, search: any) => {
-				const before = utils.makeSearchParams(getFormValues(form)).toString();
+			(cy: any) => cy.get('[type="submit"]'),
+			(form: HTMLFormElement, submitter: any, search: any) => {
+				const before = utils.makeSearchParams(getFormValues(form, submitter)).toString();
 				const after = utils.makeSearchParams(search).toString();
 				expect(before).toEqual(after);
 			},
@@ -28,11 +26,9 @@ describe('single readonly template', () => {
 
 	it('should have single form value', () => {
 		utils.test(
-			(cy: any) => {
-				cy.get('[type="submit"]').click()
-			},
-			(form: HTMLFormElement, search: any) => {
-				const before = utils.makeSearchParams(getFormValues(form)).toString();
+			(cy: any) => cy.get('[type="submit"]'),
+			(form: HTMLFormElement, submitter: any, search: any) => {
+				const before = utils.makeSearchParams(getFormValues(form, submitter)).toString();
 				const after = utils.makeSearchParams(search).toString();
 				expect(before).toEqual(after);
 			},
@@ -48,11 +44,9 @@ describe('single disabled template', () => {
 
 	it('should have blank form value', () => {
 		utils.test(
-			(cy: any) => {
-				cy.get('[type="submit"]').click()
-			},
-			(form: HTMLFormElement, search: any) => {
-				const before = utils.makeSearchParams(getFormValues(form)).toString();
+			(cy: any) => cy.get('[type="submit"]'),
+			(form: HTMLFormElement, submitter: any, search: any) => {
+				const before = utils.makeSearchParams(getFormValues(form, submitter)).toString();
 				const after = utils.makeSearchParams(search).toString();
 				expect(before).toEqual(after);
 			},
@@ -65,16 +59,9 @@ describe('single input with double button submitters template', () => {
 	beforeEach(utils.setup('single-input-with-double-button-submitters'))
 
 	it('should have double form values', () => {
-		let submitter: HTMLButtonElement
 		utils.test(
-			(cy: any) => {
-				cy.get('[name="action"][value="Foo"]')
-					.then((result: any) => {
-						[submitter] = Array.from(result)
-					})
-					.click()
-			},
-			(form: HTMLFormElement, search: any) => {
+			(cy: any) => cy.get('[name="action"][value="Foo"]'),
+			(form: HTMLFormElement, submitter: any, search: any) => {
 				const before = utils.makeSearchParams(getFormValues(form, submitter)).toString();
 				const after = utils.makeSearchParams(search).toString();
 				expect(before).toEqual(after);
@@ -91,16 +78,9 @@ describe('single input with double input submitters template', () => {
 	beforeEach(utils.setup('single-input-with-double-input-submitters'))
 
 	it('should have double form values', () => {
-		let submitter: HTMLInputElement
 		utils.test(
-			(cy: any) => {
-				cy.get('[name="action"][value="Bar"]')
-					.then((result: any) => {
-						[submitter] = Array.from(result)
-					})
-					.click()
-			},
-			(form: HTMLFormElement, search: any) => {
+			(cy: any) => cy.get('[name="action"][value="Bar"]'),
+			(form: HTMLFormElement, submitter: any, search: any) => {
 				const before = utils.makeSearchParams(getFormValues(form, submitter)).toString();
 				const after = utils.makeSearchParams(search).toString();
 				expect(before).toEqual(after);

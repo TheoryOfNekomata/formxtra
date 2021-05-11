@@ -9,11 +9,9 @@ describe('blank template', () => {
 
 	it('should have blank form value', () => {
 		utils.test(
-			(cy: any) => {
-				cy.get('[type="submit"]').click()
-			},
-			(form: HTMLFormElement, search: any) => {
-				const before = utils.makeSearchParams(getFormValues(form)).toString();
+			(cy: any) => cy.get('[type="submit"]'),
+			(form: HTMLFormElement, submitter: any, search: any) => {
+				const before = utils.makeSearchParams(getFormValues(form, submitter)).toString();
 				const after = utils.makeSearchParams(search).toString();
 				expect(before).toEqual(after);
 			},
