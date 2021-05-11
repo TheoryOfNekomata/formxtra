@@ -13,9 +13,9 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "test": "tsdx test",
+    "test:jsdom": "tsdx test",
+    "test:dom": "cypress open",
     "lint": "tsdx lint",
-		"e2e": "cypress open",
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why"
@@ -49,6 +49,7 @@
     "@size-limit/preset-small-lib": "^4.10.2",
     "@types/jsdom": "^16.2.10",
     "cypress": "^7.2.0",
+    "cypress-jest-adapter": "^0.1.1",
     "husky": "^6.0.0",
     "jsdom": "^16.5.3",
     "size-limit": "^4.10.2",
