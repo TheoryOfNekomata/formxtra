@@ -9,13 +9,13 @@
   ],
 	"publishing": {
 		"github": {
-			"repository": "https://github.com/TheoryOfNekomata/get-form-values.git",
+			"repository": "https://github.com/TheoryOfNekomata/formxtr.git",
 			"publishConfig": {
 				"registry": "https://npm.pkg.github.com"
 			}
 		},
 		"master": {
-			"repository": "https://code.modal.sh/TheoryOfNekomata/get-form-values.git",
+			"repository": "https://code.modal.sh/TheoryOfNekomata/formxtr.git",
 			"publishConfig": {
 				"registry": "https://js.pack.modal.sh"
 			}
