@@ -7,6 +7,25 @@
     "dist",
     "src"
   ],
+	"publishing": {
+		"github": {
+			"repository": "https://github.com/TheoryOfNekomata/get-form-values.git",
+			"publishConfig": {
+				"registry": "https://npm.pkg.github.com"
+			}
+		},
+		"master": {
+			"repository": "https://code.modal.sh/TheoryOfNekomata/get-form-values.git",
+			"publishConfig": {
+				"registry": "https://js.pack.modal.sh"
+			}
+		},
+		"npm": {
+			"publishConfig": {
+				"registry": "https://registry.npmjs.com"
+			}
+		}
+	},
   "engines": {
     "node": ">=10"
   },
@@ -32,7 +51,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "get-form-values",
+  "name": "@theoryofnekomata/formxtr",
   "author": "TheoryOfNekomata",
   "module": "dist/get-form-values.esm.js",
   "size-limit": [
