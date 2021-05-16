@@ -52,7 +52,7 @@
     "trailingComma": "es5"
   },
   "name": "@theoryofnekomata/formxtra",
-  "author": "TheoryOfNekomata",
+  "author": "TheoryOfNekomata <allan.crisostomo@outlook.com>",
   "module": "dist/get-form-values.esm.js",
   "size-limit": [
     {
