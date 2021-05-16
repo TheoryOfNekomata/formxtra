@@ -42,12 +42,17 @@ For an example form:
 ```html
 <!-- ...  -->
 
-<form id="form">
+<form id="loginForm">
 	<input type="text" name="username" />
 	<input type="password" name="password" />
 	<button type="submit" name="type" value="client">Log In As Client</button>
 	<button type="submit" name="type" value="admin">Log In As Admin</button>
 </form>
+
+<label>
+	<input type="checkbox" name="remember" form="loginForm" />
+	Remember my login credentials
+</label>
 
 <!-- ... --->
 ```
