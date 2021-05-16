@@ -54,10 +54,6 @@
 		"utility"
 	],
 	"homepage": "https://code.modal.sh/TheoryOfNekomata/formxtra",
-	"repository": {
-		"type": "git",
-		"url": "https://code.modal.sh/TheoryOfNekomata/formxtra.git"
-	},
 	"size-limit": [
 		{
 			"path": "dist/get-form-values.cjs.production.min.js",
