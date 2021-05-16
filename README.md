@@ -35,7 +35,7 @@ The package can be found on:
 
 - [Modal Pack](https://js.pack.modal.sh)
 - [npm](https://npmjs.com/package/formxtra)
-- [GitHub Package Registry](https://github.com/TheoryOfNekomata/formxtra/packages/784699)
+- [GitHub Package Registry](https://github.com/TheoryOfNekomata/formxtra/packages/793279)
 
 ## Usage
 
