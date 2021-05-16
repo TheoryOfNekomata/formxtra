@@ -1,6 +1,1 @@
-{
-	"fixturesFolder": "test/fixtures",
-	"integrationFolder": "test/integration",
-	"pluginsFile": "test/plugins/index.ts",
-	"supportFile": "test/support/index.ts"
-}
+{}

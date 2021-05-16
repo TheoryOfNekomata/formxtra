@@ -2,6 +2,10 @@
 
 Extract form values through the DOM.
 
+## Motivation
+
+There are many ways to lay out forms.
+
 ## Installation
 
 The library is not yet out on any package manager. Installing through the URL is the preferred way.

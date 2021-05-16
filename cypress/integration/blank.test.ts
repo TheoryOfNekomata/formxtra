@@ -1,8 +1,5 @@
-/// <reference types="cypress" />
-/// <reference types="cypress-jest-adapter" />
-
 import getFormValues from '../../src'
-import * as utils from '../utils'
+import * as utils from '../../test/utils'
 
 describe('blank template', () => {
 	beforeEach(utils.setup('blank'))
@@ -11,7 +8,7 @@ describe('blank template', () => {
 		utils.test(
 			(cy: any) => cy.get('[type="submit"]'),
 			(form: HTMLFormElement, submitter: any, search: any) => {
-				const before = utils.makeSearchParams(getFormValues(form, submitter)).toString();
+				const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
 				const after = utils.makeSearchParams(search).toString();
 				expect(before).toEqual(after);
 			},

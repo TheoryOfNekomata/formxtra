@@ -1,9 +1,20 @@
+/**
+ * Type for valid field elements.
+ *
+ *
+ */
+
 type HTMLFieldElement
 	= HTMLInputElement
 	| HTMLButtonElement
 	| HTMLSelectElement
 	| HTMLTextAreaElement
 
+/**
+ * Type for valid submitter elements.
+ *
+ * Only the <button> and <input> elements can be submitter elements.
+ */
 type HTMLSubmitterElement
 	= HTMLButtonElement
 	| HTMLInputElement
@@ -42,8 +53,15 @@ const getFieldValue = (el: HTMLFieldElement) => {
 		return fieldEl.value.replace(/\n/g, '\r\n')
 	}
 
-	if (tagName === 'SELECT' && fieldEl.value === '') {
-		return null
+	if (tagName === 'SELECT') {
+		if (fieldEl.value === '') {
+			return null
+		}
+		const selectEl = fieldEl as HTMLSelectElement
+		if (selectEl.multiple) {
+			return Array.from(selectEl.options).filter(o => o.selected).map(o => o.value)
+		}
+		return selectEl.value
 	}
 
 	if (tagName === 'INPUT') {
@@ -64,6 +82,17 @@ const getFieldValue = (el: HTMLFieldElement) => {
 				return radioEl.value
 			}
 			return null
+		case 'file':
+			const fileUploadEl = fieldEl as HTMLInputElement
+			const { files } = fileUploadEl
+			if ((files as unknown) !== null) {
+				const [file = null] = Array.from(files as FileList)
+				if (file !== null) {
+					return file.name
+				}
+				return ''
+			}
+			return null
 		default:
 			break
 		}
@@ -75,7 +104,7 @@ const getFieldValue = (el: HTMLFieldElement) => {
 
 /**
  * Returns only named form field elements.
- * @param el - The element
+ * @param el - The element.
  */
 const isValidFormField = (el: HTMLFieldElement) => {
 	return (
@@ -87,10 +116,29 @@ const isValidFormField = (el: HTMLFieldElement) => {
 	)
 }
 
+type GetFormValuesOptions = {
+	/**
+	 * The element that triggered the submission of the form.
+	 */
+	submitter?: HTMLSubmitterElement,
+	/**
+	 * Should we consider the `checked` attribute of checkboxes with no `value` attributes instead of the default value
+	 * "on" when checked?
+	 */
+	booleanValuelessCheckbox?: true,
+	/**
+	 * Should we retrieve the `files` attribute of file inputs instead of the currently selected file names?
+	 */
+	hasFiles?: true,
+}
+
 /**
  * Gets the values of all the fields within the form through accessing the DOM nodes.
+ * @param form - The form.
+ * @param options - The options.
+ * @returns The form values.
  */
-const getFormValues = (form: HTMLFormElement, submitter?: HTMLSubmitterElement) => {
+const getFormValues = (form: HTMLFormElement, options = {} as GetFormValuesOptions) => {
 	if (!form) {
 		throw new TypeError('Invalid form element.')
 	}
@@ -134,10 +182,10 @@ const getFormValues = (form: HTMLFormElement, submitter?: HTMLSubmitterElement) 
 		},
 		{} as any
 	)
-	if (Boolean(submitter as unknown)) {
+	if (Boolean(options.submitter as unknown)) {
 		return {
 			...fieldValues,
-			[(submitter as HTMLSubmitterElement).name]: (submitter as HTMLSubmitterElement).value,
+			[(options.submitter as HTMLSubmitterElement).name]: (options.submitter as HTMLSubmitterElement).value,
 		}
 	}
 	return fieldValues

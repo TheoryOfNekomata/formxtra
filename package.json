@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -7,25 +7,25 @@
     "dist",
     "src"
   ],
-	"publishing": {
-		"github": {
-			"repository": "https://github.com/TheoryOfNekomata/formxtr.git",
-			"publishConfig": {
-				"registry": "https://npm.pkg.github.com"
-			}
-		},
-		"master": {
-			"repository": "https://code.modal.sh/TheoryOfNekomata/formxtr.git",
-			"publishConfig": {
-				"registry": "https://js.pack.modal.sh"
-			}
-		},
-		"npm": {
-			"publishConfig": {
-				"registry": "https://registry.npmjs.com"
-			}
-		}
-	},
+  "publishing": {
+    "github": {
+      "repository": "https://github.com/TheoryOfNekomata/formxtr.git",
+      "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+      }
+    },
+    "master": {
+      "repository": "https://code.modal.sh/TheoryOfNekomata/formxtr.git",
+      "publishConfig": {
+        "registry": "https://js.pack.modal.sh"
+      }
+    },
+    "npm": {
+      "publishConfig": {
+        "registry": "https://registry.npmjs.com"
+      }
+    }
+  },
   "engines": {
     "node": ">=10"
   },
@@ -68,6 +68,7 @@
     "@size-limit/preset-small-lib": "^4.10.2",
     "@types/jsdom": "^16.2.10",
     "cypress": "^7.2.0",
+    "cypress-file-upload": "^5.0.7",
     "cypress-jest-adapter": "^0.1.1",
     "husky": "^6.0.0",
     "jsdom": "^16.5.3",
