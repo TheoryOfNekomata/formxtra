@@ -8,7 +8,11 @@ There are many ways to lay out forms.
 
 ## Installation
 
-The library is not yet out on any package manager. Installing through the URL is the preferred way.
+The package can be found on:
+
+- [Modal Pack](https://js.pack.modal.sh)
+- [npm](https://npmjs.com/package/formxtr)
+- [GitHub Package Registry](https://github.com/TheoryOfNekomata/formxtr/packages/784699)
 
 ## Usage
 
