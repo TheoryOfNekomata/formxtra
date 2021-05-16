@@ -1,4 +1,6 @@
-# formxtr
+# formxtra
+
+_(read "form extra")_
 
 Extract form values through the DOM.
 
@@ -20,7 +22,7 @@ Upon retrieving the field values somehow, some libraries attempt to duplicate th
 for instance by attaching event listeners and storing the new values into some internal object or map, which can be
 retrieved by some other exposed function.
 
-With `formxtr`, there is no need to traverse the DOM for individual fields to get their values. Provided the fields are
+With `formxtra`, there is no need to traverse the DOM for individual fields to get their values. Provided the fields are
 associated to the form (either as a descendant of the `<form>` element or [associated through the `form=""`
 attribute](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form)) and has a valid
 `name`, the values of these fields can be easily extracted, using the `form.elements` attribute built-in to the DOM and
@@ -32,8 +34,8 @@ of the field elements are already stored in the DOM, waiting to be accessed.
 The package can be found on:
 
 - [Modal Pack](https://js.pack.modal.sh)
-- [npm](https://npmjs.com/package/formxtr)
-- [GitHub Package Registry](https://github.com/TheoryOfNekomata/formxtr/packages/784699)
+- [npm](https://npmjs.com/package/formxtra)
+- [GitHub Package Registry](https://github.com/TheoryOfNekomata/formxtra/packages/784699)
 
 ## Usage
 
@@ -60,7 +62,7 @@ For an example form:
 Use the library as follows (code is in TypeScript, but can work with JavaScript as well):
 
 ```typescript
-import getFormValues from '@theoryofnekomata/formxtr';
+import getFormValues from '@theoryofnekomata/formxtra';
 
 const form: HTMLFormElement = document.getElementById('form');
 

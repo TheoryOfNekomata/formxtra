@@ -9,13 +9,13 @@
   ],
   "publishing": {
     "github": {
-      "repository": "https://github.com/TheoryOfNekomata/formxtr.git",
+      "repository": "https://github.com/TheoryOfNekomata/formxtra.git",
       "publishConfig": {
         "registry": "https://npm.pkg.github.com"
       }
     },
     "master": {
-      "repository": "https://code.modal.sh/TheoryOfNekomata/formxtr.git",
+      "repository": "https://code.modal.sh/TheoryOfNekomata/formxtra.git",
       "publishConfig": {
         "registry": "https://js.pack.modal.sh"
       }
@@ -51,7 +51,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "@theoryofnekomata/formxtr",
+  "name": "@theoryofnekomata/formxtra",
   "author": "TheoryOfNekomata",
   "module": "dist/get-form-values.esm.js",
   "size-limit": [

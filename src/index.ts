@@ -1,135 +1,283 @@
 /**
  * Type for valid field elements.
- *
- *
  */
-
-type HTMLFieldElement
+export type HTMLFieldElement
 	= HTMLInputElement
 	| HTMLButtonElement
 	| HTMLSelectElement
 	| HTMLTextAreaElement
 
 /**
+ * Line ending.
+ */
+export enum LineEnding {
+	/**
+	 * Carriage return.
+	 */
+	CR = '\r',
+	/**
+	 * Line feed.
+	 */
+	LF = '\n',
+	/**
+	 * Carriage return/line feed combination.
+	 */
+	CRLF = '\r\n',
+}
+
+/**
  * Type for valid submitter elements.
  *
- * Only the <button> and <input> elements can be submitter elements.
+ * Only the `<button>` and `<input>` elements can be submitter elements.
  */
-type HTMLSubmitterElement
+export type HTMLSubmitterElement
 	= HTMLButtonElement
 	| HTMLInputElement
 
-const isFormFieldElement = (el: HTMLFieldElement) => {
-	const htmlEl = el as HTMLElement
-	const tagName = htmlEl.tagName
+/**
+ * Options for getting a `<textarea>` element field value.
+ */
+type GetTextAreaValueOptions = {
+	/**
+	 * Line ending used for the element's value.
+	 */
+	lineEndings?: LineEnding,
+}
+
+/**
+ * Options for getting a `<select>` element field value.
+ */
+type GetSelectValueOptions = {}
+
+/**
+ * Options for getting an `<input type="checkbox">` element field value.
+ */
+type GetInputCheckboxFieldValueOptions = {
+	/**
+	 * Should we consider the `checked` attribute of checkboxes with no `value` attributes instead of the default value
+	 * "on" when checked?
+	 *
+	 * This forces the field to get the `false` value when unchecked.
+	 */
+	booleanValuelessCheckbox?: true,
+}
+
+/**
+ * Options for getting an `<input type="radio">` element field value.
+ */
+type GetInputRadioFieldValueOptions = {}
+
+/**
+ * Options for getting an `<input type="file">` element field value.
+ */
+type GetInputFileFieldValueOptions = {
+	/**
+	 * Should we retrieve the `files` attribute of file inputs instead of the currently selected file names?
+	 */
+	getFileObjects?: true,
+}
+
+/**
+ * Options for getting an `<input>` element field value.
+ */
+type GetInputFieldValueOptions
+	= GetInputCheckboxFieldValueOptions
+	& GetInputFileFieldValueOptions
+	& GetInputRadioFieldValueOptions
+
+/**
+ * Options for getting a field value.
+ */
+type GetFieldValueOptions
+	= GetTextAreaValueOptions
+	& GetSelectValueOptions
+	& GetInputFieldValueOptions
+
+/**
+ * Options for getting form values.
+ */
+type GetFormValuesOptions = GetFieldValueOptions & {
+	/**
+	 * The element that triggered the submission of the form.
+	 */
+	submitter?: HTMLSubmitterElement,
+}
+
+/**
+ * Checks if an element can hold a field value.
+ * @param el - The element.
+ */
+export const isFormFieldElement = (el: HTMLElement) => {
+	const { tagName } = el
 	if (['SELECT', 'TEXTAREA'].includes(tagName)) {
 		return true
 	}
 	if (tagName !== 'INPUT') {
 		return false
 	}
-	const inputEl = htmlEl as HTMLInputElement
-	const type = inputEl.type
-	const checkedValue = inputEl.getAttribute('value')
-	if (type === 'checkbox' && checkedValue !== null) {
-		return inputEl.checked
-	}
+	const inputEl = el as HTMLInputElement
+	const { type } = inputEl
 	if (type === 'submit' || type === 'reset') {
 		return false
 	}
 	return Boolean(inputEl.name)
 }
 
+const getTextAreaFieldValue = (textareaEl: HTMLTextAreaElement, options = {} as GetTextAreaValueOptions) => {
+	const { lineEndings = LineEnding.CRLF, } = options
+	return textareaEl.value.replace(/\n/g, lineEndings)
+}
+
+/**
+ * Gets the value of a `<select>` element.
+ * @param selectEl - The element.
+ * @param options - The options.
+ * @returns Value of the select element.
+ */
+const getSelectFieldValue = (selectEl: HTMLSelectElement, options = {} as GetSelectValueOptions) => {
+	if (selectEl.multiple) {
+		return Array.from(selectEl.options).filter(o => o.selected).map(o => o.value)
+	}
+	if (typeof options !== 'object' || options === null) {
+		throw new Error('Invalid options.')
+	}
+	return selectEl.value
+}
+
+/**
+ * Type for an `<input type="checkbox">` element.
+ */
+export type HTMLInputCheckboxElement = HTMLInputElement & { type: 'checkbox' }
+
+/**
+ * Type for an `<input type="radio">` element.
+ */
+export type HTMLInputRadioElement = HTMLInputElement & { type: 'radio' }
+
+/**
+ * Type for an `<input type="file">` element.
+ */
+export type HTMLInputFileElement = HTMLInputElement & { type: 'file' }
+
+/**
+ * Gets the value of an `<input type="radio">` element.
+ * @param inputEl - The element.
+ * @param options - The options.
+ * @returns Value of the input element.
+ */
+const getInputRadioFieldValue = (inputEl: HTMLInputRadioElement, options = {} as GetInputRadioFieldValueOptions) => {
+	if (inputEl.checked) {
+		return inputEl.value
+	}
+	if (typeof options !== 'object' || options === null) {
+		throw new Error('Invalid options.')
+	}
+	return null
+}
+/**
+ * Gets the value of an `<input type="checkbox">` element.
+ * @param inputEl - The element.
+ * @param options - The options.
+ * @returns Value of the input element.
+ */
+const getInputCheckboxFieldValue = (inputEl: HTMLInputCheckboxElement, options = {} as GetInputCheckboxFieldValueOptions) => {
+	const checkedValue = inputEl.getAttribute('value')
+	if (checkedValue !== null) {
+		if (inputEl.checked) {
+			return inputEl.value
+		}
+		return null
+	}
+	if (options.booleanValuelessCheckbox) {
+		return inputEl.checked
+	}
+	if (inputEl.checked) {
+		return 'on'
+	}
+	return null
+}
+
+/**
+ * Gets the value of an `<input type="file">` element.
+ * @param inputEl - The element.
+ * @param options - The options.
+ * @returns Value of the input element.
+ */
+const getInputFileFieldValue = (inputEl: HTMLInputFileElement, options = {} as GetInputFileFieldValueOptions) => {
+	const { files } = inputEl
+	if ((files as unknown) === null) {
+		return null
+	}
+	if (options.getFileObjects) {
+		return files
+	}
+	const filesArray = Array.from(files as FileList)
+	if (filesArray.length > 1) {
+		return filesArray.map(f => f.name)
+	}
+	if (filesArray.length === 1) {
+		return filesArray[0].name
+	}
+	return ''
+}
+
+/**
+ * Gets the value of an `<input>` element.
+ * @param inputEl - The element.
+ * @param options - The options.
+ * @returns Value of the input element.
+ */
+const getInputFieldValue = (inputEl: HTMLInputElement, options = {} as GetInputFieldValueOptions) => {
+	switch (inputEl.type) {
+	case 'checkbox':
+		return getInputCheckboxFieldValue(inputEl as HTMLInputCheckboxElement, options)
+	case 'radio':
+		return getInputRadioFieldValue(inputEl as HTMLInputRadioElement, options)
+	case 'file':
+		return getInputFileFieldValue(inputEl as HTMLInputFileElement, options)
+	default:
+		break
+	}
+	return inputEl.value
+}
+
 /**
  * Gets the value of a field element.
- * @param el - The field element node.
+ * @param el - The field element.
+ * @param options - The options.
+ * @returns Value of the field element.
  */
-const getFieldValue = (el: HTMLFieldElement) => {
+export const getFieldValue = (el: HTMLElement, options = {} as GetFieldValueOptions) => {
+	switch (el.tagName) {
+	case 'TEXTAREA':
+		return getTextAreaFieldValue(el as HTMLTextAreaElement, options)
+	case 'SELECT':
+		return getSelectFieldValue(el as HTMLSelectElement, options)
+	case 'INPUT':
+		return getInputFieldValue(el as HTMLInputElement, options)
+	default:
+		break
+	}
+
 	const fieldEl = el as HTMLFieldElement
-	const tagName = fieldEl.tagName
-	const type = fieldEl.type
-
-	if (tagName === 'TEXTAREA') {
-		return fieldEl.value.replace(/\n/g, '\r\n')
-	}
-
-	if (tagName === 'SELECT') {
-		if (fieldEl.value === '') {
-			return null
-		}
-		const selectEl = fieldEl as HTMLSelectElement
-		if (selectEl.multiple) {
-			return Array.from(selectEl.options).filter(o => o.selected).map(o => o.value)
-		}
-		return selectEl.value
-	}
-
-	if (tagName === 'INPUT') {
-		switch (type) {
-		case 'checkbox':
-			const checkboxEl = fieldEl as HTMLInputElement
-			const checkedValue = checkboxEl.getAttribute('value')
-			if (checkedValue !== null) {
-				if (checkboxEl.checked) {
-					return checkboxEl.value
-				}
-				return null
-			}
-			return 'on' // default value
-		case 'radio':
-			const radioEl = fieldEl as HTMLInputElement
-			if (radioEl.checked) {
-				return radioEl.value
-			}
-			return null
-		case 'file':
-			const fileUploadEl = fieldEl as HTMLInputElement
-			const { files } = fileUploadEl
-			if ((files as unknown) !== null) {
-				const [file = null] = Array.from(files as FileList)
-				if (file !== null) {
-					return file.name
-				}
-				return ''
-			}
-			return null
-		default:
-			break
-		}
-
-	}
-
-	return fieldEl.value
+	return fieldEl.value || null
 }
 
 /**
- * Returns only named form field elements.
+ * Determines if an element is a named and enabled form field.
  * @param el - The element.
+ * @returns Value determining if the element is a named and enabled form field.
  */
-const isValidFormField = (el: HTMLFieldElement) => {
+export const isNamedEnabledFormFieldElement = (el: HTMLElement) => {
+	if (typeof el['name'] !== 'string') {
+		return false
+	}
+	const namedEl = el as HTMLElement & { name: string, disabled: unknown }
 	return (
-		'name' in el
-		&& typeof el['name'] === 'string'
-		&& el['name'].length > 0
-		&& !('disabled' in el && Boolean(el['disabled']))
-		&& isFormFieldElement(el)
+		namedEl.name.length > 0
+		&& !('disabled' in namedEl && Boolean(namedEl.disabled))
+		&& isFormFieldElement(namedEl)
 	)
-}
-
-type GetFormValuesOptions = {
-	/**
-	 * The element that triggered the submission of the form.
-	 */
-	submitter?: HTMLSubmitterElement,
-	/**
-	 * Should we consider the `checked` attribute of checkboxes with no `value` attributes instead of the default value
-	 * "on" when checked?
-	 */
-	booleanValuelessCheckbox?: true,
-	/**
-	 * Should we retrieve the `files` attribute of file inputs instead of the currently selected file names?
-	 */
-	hasFiles?: true,
 }
 
 /**
@@ -144,16 +292,13 @@ const getFormValues = (form: HTMLFormElement, options = {} as GetFormValuesOptio
 	}
 	const formElements = form.elements as unknown as Record<string | number, HTMLFieldElement>
 	const allFormFieldElements = Object.entries<HTMLFieldElement>(formElements)
-	const formFieldElements = allFormFieldElements.filter(([k, el]) => {
-		return (
-			// get only indexed forms
-			!isNaN(Number(k))
-			&& isValidFormField(el)
-		)
-	})
-	const fieldValues = formFieldElements.reduce(
+	const indexedNamedEnabledFormFieldElements = allFormFieldElements.filter(([k, el]) => (
+		!isNaN(Number(k))
+		&& isNamedEnabledFormFieldElement(el)
+	))
+	const fieldValues = indexedNamedEnabledFormFieldElements.reduce(
 		(theFormValues, [,el]) => {
-			const fieldValue = getFieldValue(el)
+			const fieldValue = getFieldValue(el, options)
 			if (fieldValue === null) {
 				return theFormValues
 			}
@@ -183,9 +328,12 @@ const getFormValues = (form: HTMLFormElement, options = {} as GetFormValuesOptio
 		{} as any
 	)
 	if (Boolean(options.submitter as unknown)) {
-		return {
-			...fieldValues,
-			[(options.submitter as HTMLSubmitterElement).name]: (options.submitter as HTMLSubmitterElement).value,
+		const submitter = options.submitter as HTMLSubmitterElement
+		if (submitter.name.length > 0) {
+			return {
+				...fieldValues,
+				[submitter.name]: submitter.value,
+			}
 		}
 	}
 	return fieldValues
