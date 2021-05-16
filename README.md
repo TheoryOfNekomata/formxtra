@@ -73,7 +73,7 @@ const submitter = form.querySelector('[type="submit"][name="type"][value="client
 const values = getFormValues(form, { submitter });
 
 const processResult = (result: Record<string, unknown>) => {
-  throw new Error('Not yet implemented.');
+	throw new Error('Not yet implemented.');
 };
 
 // Best use case is with event handlers
