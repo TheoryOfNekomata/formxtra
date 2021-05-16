@@ -45,12 +45,6 @@
       "pre-commit": "tsdx lint"
     }
   },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
   "name": "@theoryofnekomata/formxtra",
   "author": "TheoryOfNekomata <allan.crisostomo@outlook.com>",
   "module": "dist/get-form-values.esm.js",
