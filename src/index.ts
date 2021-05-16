@@ -170,7 +170,7 @@ type GetInputFileFieldValueOptions = {
  * @returns Value of the input element.
  */
 const getInputFileFieldValue = (inputEl: HTMLInputFileElement, options = {} as GetInputFileFieldValueOptions) => {
-	const { files, multiple } = inputEl
+	const { files } = inputEl
 	if ((files as unknown) === null) {
 		return null
 	}
@@ -178,10 +178,10 @@ const getInputFileFieldValue = (inputEl: HTMLInputFileElement, options = {} as G
 		return files
 	}
 	const filesArray = Array.from(files as FileList)
-	if (multiple) {
+	if (filesArray.length > 1) {
 		return filesArray.map(f => f.name)
 	}
-	return filesArray[0].name || ''
+	return filesArray[0]?.name || ''
 }
 
 /**
@@ -316,6 +316,7 @@ const getFormValues = (form: HTMLFormElement, options = {} as GetFormValuesOptio
 		},
 		{} as any
 	)
+
 	if (Boolean(options.submitter as unknown)) {
 		const submitter = options.submitter as HTMLElement & { name: string, value: unknown }
 		if (submitter.name.length > 0) {
@@ -325,6 +326,7 @@ const getFormValues = (form: HTMLFormElement, options = {} as GetFormValuesOptio
 			}
 		}
 	}
+
 	return fieldValues
 }
 
