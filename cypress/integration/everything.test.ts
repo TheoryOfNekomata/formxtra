@@ -1,10 +1,10 @@
 import getFormValues from '../../src'
 import * as utils from '../../test/utils';
 
-describe('blank template', () => {
+describe('everything template', () => {
 	beforeEach(utils.setup('everything'))
 
-	it('should have blank form value', () => {
+	it('should have correct form values', () => {
 		utils.test(
 			(cy) => {
 				cy.get('[name="first_name"]').type('John')
