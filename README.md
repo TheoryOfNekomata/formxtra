@@ -2,7 +2,7 @@
 
 _(read "form extra")_
 
-Extract form values through the DOM.
+Extract and set form values through the DOM.
 
 ## Motivation
 
@@ -16,7 +16,9 @@ values to each field in the form.
 
 Libraries made for extracting form values query field elements in the DOM, which is inefficient since they need to
 traverse the DOM tree in some way, using methods such as `document.getElementsByTagName()` and
-`document.querySelector()`.
+`document.querySelector()`. This is the same case with setting each form values for, say, prefilling values to save
+time. It might be a simple improvement to the user experience, but the logic behind can be unwieldy as there may be
+inconsistencies in setting up each field value depending on the form library being used.
 
 Upon retrieving the field values somehow, some libraries attempt to duplicate the values of the fields as they change,
 for instance by attaching event listeners and storing the new values into some internal object or map. This is then
@@ -25,15 +27,15 @@ where changes to the document are essential to establish functionality and impro
 
 ---
 
-With `formxtra`, there is no need to traverse the DOM for individual fields to get their values, provided they are:
+With `formxtra`, there is no need to traverse elements for individual fields to get and set their values, provided they are:
 
 * Associated to the form (either as a descendant of the `<form>` element or [associated through the `form=""`
 attribute](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form))
 * Has a valid `name`
 
-The values of these fields can be easily extracted, using the `form.elements` attribute built-in to the DOM. With this,
-only the reference to the form is needed. The current state of the field elements is already stored in the DOM, waiting
-to be accessed.
+The values of these fields can be easily extracted and set, using the `form.elements` attribute built-in to the DOM.
+With this, only the reference to the form is needed. The current state of the field elements is already stored in the
+DOM, waiting to be accessed.
 
 ## Installation
 
@@ -68,23 +70,31 @@ For an example form:
 Use the library as follows (code is in TypeScript, but can work with JavaScript as well):
 
 ```typescript
-import getFormValues from '@theoryofnekomata/formxtra';
+// The default export is same with `getFormValues`, but it is recommended to use the named import for future-proofing!
+import { getFormValues, setFormValues } from '@theoryofnekomata/formxtra';
 
+// This is the only query we need. On libraries like React, we can easily get form elements when we attach submit event
+// listeners.
 const form: HTMLFormElement = document.getElementById('form');
 
-// optional, but just in case there are multiple submit buttons in the form,
+// Optional, but just in case there are multiple submit buttons in the form,
 // individual submitters can be considered
 const submitter = form.querySelector('[type="submit"][name="type"][value="client"]');
 
 const values = getFormValues(form, { submitter });
 
 const processResult = (result: Record<string, unknown>) => {
+    setFormValues(form, {
+        username: 'Username',
+        password: 'verylongsecret',
+    });
+  
 	throw new Error('Not yet implemented.');
 };
 
 // Best use case is with event handlers
 form.addEventListener('submit', async e => {
-	const { target: form, submitter } = e;
+	const { currentTarget: form, submitter } = e;
 	e.preventDefault();
 
 	const values = getFormValues(form, { submitter });

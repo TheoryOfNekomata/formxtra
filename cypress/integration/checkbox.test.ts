@@ -1,4 +1,4 @@
-import getFormValues from '../../src'
+import { getFormValues } from '../../src'
 import * as utils from '../utils'
 
 describe('checkbox', () => {
@@ -23,27 +23,37 @@ describe('checkbox', () => {
 		`))
 
 		it('should have no form values', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const values = getFormValues(form, {submitter})
-					const before = utils.makeSearchParams(values).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(values['enabled']).toBeUndefined();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					const before = utils.makeSearchParams(values)
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(values['enabled'])
+						.toBeUndefined();
+					expect(before)
+						.toEqual(after);
 				},
-				''
-			);
+				expectedStaticValue: '',
+			});
 		});
 
 		it('should have false checked value', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const values = getFormValues(form, {submitter, booleanValuelessCheckbox: true })
-					expect(values['enabled']).toBe(false);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form,
+						{
+							submitter,
+							booleanValuelessCheckbox: true
+						}
+					)
+					expect(values['enabled'])
+						.toBe(false);
 				}
-			);
+			});
 		});
 	})
 
@@ -68,15 +78,18 @@ describe('checkbox', () => {
 		`))
 
 		it('should have single form value on a single field', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				'enabled=on'
-			);
+				expectedStaticValue: 'enabled=on',
+			});
 		});
 	})
 })

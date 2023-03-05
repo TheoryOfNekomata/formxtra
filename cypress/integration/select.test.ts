@@ -1,4 +1,4 @@
-import getFormValues from '../../src'
+import { getFormValues } from '../../src'
 import * as utils from '../utils'
 
 describe('select', () => {
@@ -28,15 +28,18 @@ describe('select', () => {
 		`))
 
 		it('should have multiple form values on a single field', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				'hello=Bar&hello=Quux'
-			);
+				expectedStaticValue: 'hello=Bar&hello=Quux'
+			});
 		});
 	})
 
@@ -65,17 +68,20 @@ describe('select', () => {
 		`))
 
 		it('should have single form value on a single field', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				{
+				expectedStaticValue: {
 					hello: 'Baz',
 				}
-			);
+			});
 		});
 	})
 })

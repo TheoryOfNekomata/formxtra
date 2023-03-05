@@ -1,4 +1,4 @@
-import getFormValues from '../../src'
+import { getFormValues } from '../../src'
 import * as utils from '../utils'
 
 describe('submitter', () => {
@@ -24,18 +24,21 @@ describe('submitter', () => {
 		`))
 
 		it('should have double form values', () => {
-			utils.test(
-				(cy: any) => cy.get('[name="action"][value="Foo"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[name="action"][value="Foo"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				{
+				expectedStaticValue: {
 					hello: 'Hi',
 					action: 'Foo',
-				}
-			);
+				},
+			});
 		});
 	})
 
@@ -61,18 +64,21 @@ describe('submitter', () => {
 		`))
 
 		it('should have double form values', () => {
-			utils.test(
-				(cy: any) => cy.get('[name="action"][value="Bar"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[name="action"][value="Bar"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				{
+				expectedStaticValue: {
 					hello: 'Hi',
 					action: 'Bar',
-				}
-			);
+				},
+			});
 		});
 	})
 
@@ -96,17 +102,20 @@ describe('submitter', () => {
 		`))
 
 		it('should have single form value', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				{
+				expectedStaticValue: {
 					hello: 'Hi',
-				}
-			);
+				},
+			});
 		});
 	})
 })

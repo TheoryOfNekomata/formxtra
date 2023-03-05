@@ -2,7 +2,6 @@
   "exclude": ["node_modules"],
   "include": ["src", "types"],
   "compilerOptions": {
-    "types": ["vitest/globals"],
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "importHelpers": true,

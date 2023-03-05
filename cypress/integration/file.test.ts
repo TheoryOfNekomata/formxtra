@@ -1,4 +1,4 @@
-import getFormValues from '../../src'
+import { getFormValues } from '../../src'
 import * as utils from '../utils'
 
 describe('file', () => {
@@ -23,52 +23,65 @@ describe('file', () => {
 		`))
 
 		it('should have no form values when no file is selected', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				{}
-			);
+				expectedStaticValue: {
+					hello: ''
+				},
+			});
 		})
 
 		it('should have single form value when a file is selected', () => {
-			utils.test(
-				(cy: any) => {
+			utils.test({
+				action: (cy: any) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile('uploads/data.json')
 
 					return cy.get('[type="submit"]')
 				},
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				{
+				expectedStaticValue: {
 					hello: 'data.json',
-				}
-			);
+				},
+			});
 		})
 
 		it('should retrieve the file list upon setting appropriate option', () => {
-			utils.test(
-				(cy: any) => {
+			utils.test({
+				action: (cy: any) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile('uploads/data.json')
 
 					return cy.get('[type="submit"]')
 				},
-				(form: HTMLFormElement, submitter: any) => {
-					const formValues = getFormValues(form, {submitter, getFileObjects: true})
-					expect(formValues.hello[0].name).toBe('data.json')
-					//expect(before).toEqual(after);
+				test: (form: HTMLFormElement, submitter: any) => {
+					const formValues = getFormValues(form,
+						{
+							submitter,
+							getFileObjects: true
+						}
+					)
+					expect(formValues.hello[0].name)
+						.toBe('data.json')
 				},
-			);
+			});
 		})
 	})
 
@@ -93,50 +106,65 @@ describe('file', () => {
 		`))
 
 		it('should have no form values when no file is selected', () => {
-			utils.test(
-				(cy: any) => cy.get('[type="submit"]'),
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				{}
-			);
+				expectedStaticValue: {
+					hello: '',
+				},
+			});
 		})
 
 		it('should have single form value when a file is selected', () => {
-			utils.test(
-				(cy: any) => {
+			utils.test({
+				action: (cy: any) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile(['uploads/data.json', 'uploads/data2.json'])
 
 					return cy.get('[type="submit"]')
 				},
-				(form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, {submitter})).toString();
-					const after = utils.makeSearchParams(search).toString();
-					expect(before).toEqual(after);
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
 				},
-				'hello=data.json&hello=data2.json',
-			);
+				expectedStaticValue: 'hello=data.json&hello=data2.json',
+			});
 		})
 
 		it('should retrieve the file list upon setting appropriate option', () => {
-			utils.test(
-				(cy: any) => {
+			utils.test({
+				action: (cy: any) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile(['uploads/data.json', 'uploads/data2.json'])
 
 					return cy.get('[type="submit"]')
 				},
-				(form: HTMLFormElement, submitter: any) => {
-					const formValues = getFormValues(form, {submitter, getFileObjects: true})
-					expect(formValues.hello[0].name).toBe('data.json')
-					expect(formValues.hello[1].name).toBe('data2.json')
+				test: (form: HTMLFormElement, submitter: any) => {
+					const formValues = getFormValues(form,
+						{
+							submitter,
+							getFileObjects: true
+						}
+					)
+					expect(formValues.hello[0].name)
+						.toBe('data.json')
+					expect(formValues.hello[1].name)
+						.toBe('data2.json')
 				},
-			);
+			});
 		})
 	})
 })

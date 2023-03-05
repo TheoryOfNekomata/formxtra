@@ -4,7 +4,7 @@ import JSDOMDummyCypress from './jsdom-compat'
 
 type ExpectedSearchValue = Record<string, string> | string
 
-type RetrieveSubmitterFn = (wrapper: any) => any
+type RetrieveSubmitterFn = (wrapper: typeof cy | JSDOMDummyCypress) => any
 
 type HTMLSubmitterElement = HTMLButtonElement | HTMLInputElement
 
@@ -18,13 +18,27 @@ export const setup = (template: string) => {
 		}
 	}
 	return () => {
+		// @ts-ignore
 		window.document.open(undefined, undefined, undefined, true)
 		window.document.write(template)
 		window.document.close()
 	}
 }
 
-export const test = (retrieveSubmitterFn: RetrieveSubmitterFn, testFn: TestFn, expectedValue?: ExpectedSearchValue) => {
+type TestOptions = {
+	action: RetrieveSubmitterFn,
+	test: TestFn,
+	expectedStaticValue?: ExpectedSearchValue,
+	preAction?: Function,
+}
+
+export const test = (options: TestOptions) => {
+	const {
+		action: retrieveSubmitterFn,
+		test: testFn,
+		expectedStaticValue,
+		preAction,
+	} = options;
 	let form: HTMLFormElement
 	let submitter: HTMLButtonElement | HTMLInputElement
 	let r: any
@@ -34,6 +48,10 @@ export const test = (retrieveSubmitterFn: RetrieveSubmitterFn, testFn: TestFn, e
 			.get('form')
 			.then((formResult: any) => {
 				[form] = Array.from(formResult);
+
+				if (typeof preAction === 'function') {
+					preAction(form);
+				}
 			})
 
 		r = retrieveSubmitterFn(cy)
@@ -41,7 +59,7 @@ export const test = (retrieveSubmitterFn: RetrieveSubmitterFn, testFn: TestFn, e
 				[submitter] = Array.from(submitterQueryEl as any[])
 			})
 
-		if (typeof expectedValue !== 'undefined') {
+		if (typeof expectedStaticValue !== 'undefined') {
 			r.click()
 			cy
 				.wait('@submitted')
@@ -61,10 +79,15 @@ export const test = (retrieveSubmitterFn: RetrieveSubmitterFn, testFn: TestFn, e
 			.then((submitterQueryEl: any) => {
 				[submitter] = Array.from(submitterQueryEl as any[]);
 				[form] = Array.from(window.document.getElementsByTagName('form'))
-				testFn(form, submitter, expectedValue)
+
+				if (typeof preAction === 'function') {
+					preAction(form);
+				}
+
+				testFn(form, submitter, expectedStaticValue)
 			})
 
-		if (typeof expectedValue !== 'undefined') {
+		if (typeof expectedStaticValue !== 'undefined') {
 			r.click()
 		}
 	}
