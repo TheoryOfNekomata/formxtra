@@ -661,5 +661,9 @@ export const setFormValues = (
     });
 };
 
-// Deprecated. Use named export instead. This default export is only for compatibility.
-export default getFormValues;
+// Default import is deprecated. Use named export instead. This default export is only for
+// compatibility.
+export default (...args: Parameters<typeof getFormValues>) => {
+  console.warn('Default import is deprecated. Use named export instead. This default export is only for compatibility.');
+  return getFormValues(...args);
+};
