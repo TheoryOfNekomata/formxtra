@@ -4,6 +4,10 @@ src/
 .editorconfig
 .prettierrc
 cypress.json
+pridepack.json
+test-globals.js
 publish.sh
+tsconfig.eslint.json
 tsconfig.json
+vitest.config.js
 yarn.lock
