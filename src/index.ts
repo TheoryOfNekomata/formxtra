@@ -3,7 +3,7 @@
  */
 export enum LineEnding {
   /**
-   * Carriage return. Used for legacy Mac OS systems.
+   * Carriage return. Used for legacy macOS systems.
    */
   CR = '\r',
   /**
@@ -274,10 +274,15 @@ const setInputCheckboxFieldValue = (
   inputEl: HTMLInputCheckboxElement,
   value: unknown,
 ) => {
-  const checkedValue = inputEl.getAttribute(ATTRIBUTE_VALUE);
-  if (checkedValue !== null) {
+  const valueWhenChecked = inputEl.getAttribute(ATTRIBUTE_VALUE);
+
+  if (valueWhenChecked !== null) {
     // eslint-disable-next-line no-param-reassign
-    inputEl.checked = value === checkedValue;
+    inputEl.checked = (
+      Array.isArray(value)
+        ? value.includes(valueWhenChecked)
+        : value === valueWhenChecked
+    );
     return;
   }
 
@@ -542,12 +547,16 @@ const getInputFieldValue = (
  * Sets the value of an `<input>` element.
  * @param inputEl - The element.
  * @param value - Value of the input element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param totalOfName - How many fields with the same name are in the form?
  * @note This function is a noop for `<input type="file">` because by design, file inputs are not
  * assignable programmatically.
  */
 const setInputFieldValue = (
   inputEl: HTMLInputElement,
   value: unknown,
+  nthOfName: number,
+  totalOfName: number,
 ) => {
   switch (inputEl.type.toLowerCase()) {
     case INPUT_TYPE_CHECKBOX:
@@ -570,6 +579,13 @@ const setInputFieldValue = (
     default:
       break;
   }
+
+  if (Array.isArray(value) && totalOfName > 1) {
+    // eslint-disable-next-line no-param-reassign
+    inputEl.value = value[nthOfName];
+    return;
+  }
+
   // eslint-disable-next-line no-param-reassign
   inputEl.value = value as string;
 };
@@ -614,8 +630,15 @@ export const getFieldValue = (el: HTMLElement, options = {} as GetFieldValueOpti
  * Sets the value of a field element.
  * @param el - The field element.
  * @param value - Value of the field element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param totalOfName - How many fields with the same name are in the form?
  */
-const setFieldValue = (el: HTMLElement, value: unknown) => {
+const setFieldValue = (
+  el: HTMLElement,
+  value: unknown,
+  nthOfName: number,
+  totalOfName: number,
+) => {
   switch (el.tagName) {
     case TAG_NAME_TEXTAREA:
       setTextAreaFieldValue(el as HTMLTextAreaElement, value);
@@ -624,7 +647,7 @@ const setFieldValue = (el: HTMLElement, value: unknown) => {
       setSelectFieldValue(el as HTMLSelectElement, value);
       return;
     case TAG_NAME_INPUT:
-      setInputFieldValue(el as HTMLInputElement, value);
+      setInputFieldValue(el as HTMLInputElement, value, nthOfName, totalOfName);
       return;
     default:
       break;
@@ -780,6 +803,22 @@ export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValu
   return fieldValues;
 };
 
+const normalizeValues = (values: unknown): Record<string, unknown | unknown[]> => {
+  if (typeof values === 'string') {
+    return Object.fromEntries(new URLSearchParams(values).entries());
+  }
+
+  if (values instanceof URLSearchParams) {
+    return Object.fromEntries(values.entries());
+  }
+
+  if (Array.isArray(values)) {
+    return Object.fromEntries(values);
+  }
+
+  return values as Record<string, unknown | unknown[]>;
+};
+
 /**
  * Sets the values of all the fields within the form through accessing the DOM nodes. Partial values
  * may be passed to set values only to certain form fields.
@@ -802,11 +841,33 @@ export const setFormValues = (
   }
 
   const fieldElements = filterFieldElements(form);
-  const objectValues = new URLSearchParams(values as unknown as string | Record<string, string>);
+  const objectValues = normalizeValues(values);
+
+  const count = fieldElements
+    .filter(([, el]) => el.name in objectValues)
+    .reduce(
+      (currentCount, [, el]) => ({
+        ...currentCount,
+        [el.name]: (
+          el.tagName === TAG_NAME_INPUT && el.type === INPUT_TYPE_RADIO
+            ? 1
+            : (
+              typeof currentCount[el.name] === 'number'
+                ? currentCount[el.name] + 1
+                : 1
+            )
+        ),
+      }),
+      {} as Record<string, number>,
+    );
+
+  const counter = {} as Record<string, number>;
+
   fieldElements
-    .filter(([, el]) => objectValues.has(el.name))
+    .filter(([, el]) => el.name in objectValues)
     .forEach(([, el]) => {
-      setFieldValue(el, objectValues.get(el.name));
+      counter[el.name] = typeof counter[el.name] === 'number' ? counter[el.name] + 1 : 0;
+      setFieldValue(el, objectValues[el.name], counter[el.name], count[el.name]);
     });
 };
 

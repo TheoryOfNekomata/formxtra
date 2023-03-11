@@ -9,7 +9,8 @@ class JSDOMJQuery {
 		this.selectedElements = Array.from(elements)
 	}
 
-	type(s: string) {
+	type(sRaw: string) {
+		const s = sRaw.replace(/\{enter}/g, '\n');
 		this.selectedElements.forEach((el: any) => {
 			if (el.tagName === 'TEXTAREA') {
 				el.innerText = s

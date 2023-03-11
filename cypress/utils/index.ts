@@ -2,7 +2,7 @@
 
 import JSDOMDummyCypress from './jsdom-compat'
 
-type ExpectedSearchValue = Record<string, string> | string
+type ExpectedSearchValue = any
 
 type RetrieveSubmitterFn = (wrapper: typeof cy | JSDOMDummyCypress) => any
 
@@ -105,7 +105,21 @@ export const makeSearchParams = (beforeValues: Record<string, unknown> | string)
 				(beforeSearchParams, [key, value]) => {
 					const theValue = !Array.isArray(value) ? [value] : value
 					theValue.forEach(v => {
-						beforeSearchParams.append(key, v)
+						let processedLineBreaks = v
+						if (typeof cy !== 'undefined') {
+							let forceLineBreaks: string;
+
+							// TODO make this foolproof
+							if (navigator.platform.indexOf("Mac") === 0 ||
+								navigator.platform === "iPhone") {
+								forceLineBreaks = '\n';
+							} else if (navigator.platform === 'Win32') {
+								forceLineBreaks = '\r\n';
+							}
+							processedLineBreaks = processedLineBreaks
+								.replace(/(\r\n|\r|\n)/g, forceLineBreaks)
+						}
+						beforeSearchParams.append(key, processedLineBreaks)
 					})
 					return beforeSearchParams
 				},
