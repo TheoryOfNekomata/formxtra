@@ -827,7 +827,7 @@ const normalizeValues = (values: unknown): Record<string, unknown | unknown[]> =
  */
 export const setFormValues = (
   form: HTMLFormElement,
-  values: ConstructorParameters<typeof URLSearchParams>[0] | Record<string, unknown>,
+  values: unknown,
 ) => {
   assertIsFormElement(form, 'getFormValues');
 
@@ -846,18 +846,23 @@ export const setFormValues = (
   const count = fieldElements
     .filter(([, el]) => el.name in objectValues)
     .reduce(
-      (currentCount, [, el]) => ({
-        ...currentCount,
-        [el.name]: (
-          el.tagName === TAG_NAME_INPUT && el.type === INPUT_TYPE_RADIO
-            ? 1
-            : (
-              typeof currentCount[el.name] === 'number'
-                ? currentCount[el.name] + 1
-                : 1
-            )
-        ),
-      }),
+      (currentCount, [, el]) => {
+        if (el.tagName === TAG_NAME_INPUT && el.type === INPUT_TYPE_RADIO) {
+          return {
+            ...currentCount,
+            [el.name]: 1,
+          };
+        }
+
+        return {
+          ...currentCount,
+          [el.name]: (
+            typeof currentCount[el.name] === 'number'
+              ? currentCount[el.name] + 1
+              : 1
+          ),
+        };
+      },
       {} as Record<string, number>,
     );
 
