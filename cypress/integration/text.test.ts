@@ -198,4 +198,6 @@ describe('text', () => {
 			});
 		});
 	});
+
+	// TODO implement textarea tests
 })

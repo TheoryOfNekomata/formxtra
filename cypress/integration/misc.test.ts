@@ -251,6 +251,7 @@ describe('misc', () => {
 						.toString();
 					const after = utils.makeSearchParams(search)
 						.toString();
+
 					expect(before)
 						.toEqual(after);
 				},
@@ -280,5 +281,7 @@ Another line`,
 				expectedStaticValue: 'first_name=John&middle_name=Marcelo&last_name=Dela+Cruz&gender=m&birthday=1989-06-04&civil_status=married&new_registration=on&last_appointment_datetime=2001-09-11T06%3A09&new_appointment_week=2001-W51&start_month=2002-03&nationality=filipino&gross=131072&dependent=Jun&notes=Test+content%0D%0A%0D%0ANew+line%0D%0A%0D%0AAnother+line&qos=9.5&submit=Hi',
 			});
 		});
-	})
-})
+	});
+
+	// TODO implement tests for multiple values
+});

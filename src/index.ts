@@ -16,23 +16,53 @@ export enum LineEnding {
   CRLF = '\r\n',
 }
 
+/**
+ * Type for a placeholder object value.
+ */
 type PlaceholderObject = Record<string, unknown>
 
 /**
- * Checks if an element can hold a field value.
+ * Tag name for the `<input>` element.
+ */
+const TAG_NAME_INPUT = 'INPUT' as const;
+
+/**
+ * Tag name for the `<textarea>` element.
+ */
+const TAG_NAME_TEXTAREA = 'TEXTAREA' as const;
+
+/**
+ * Tag name for the `<select>` element.
+ */
+const TAG_NAME_SELECT = 'SELECT' as const;
+
+/**
+ * Tag names for valid form field elements of any configuration.
+ */
+const FORM_FIELD_ELEMENT_TAG_NAMES = [TAG_NAME_SELECT, TAG_NAME_TEXTAREA] as const;
+
+/**
+ * Types for button-like `<input>` elements that are not considered as a form field.
+ */
+const FORM_FIELD_INPUT_EXCLUDED_TYPES = ['submit', 'reset'] as const;
+
+/**
+ * Checks if an element can hold a custom (user-inputted) field value.
  * @param el - The element.
  */
 export const isFormFieldElement = (el: HTMLElement) => {
   const { tagName } = el;
-  if (['SELECT', 'TEXTAREA'].includes(tagName)) {
+  if (FORM_FIELD_ELEMENT_TAG_NAMES.includes(tagName as typeof FORM_FIELD_ELEMENT_TAG_NAMES[0])) {
     return true;
   }
-  if (tagName !== 'INPUT') {
+  if (tagName !== TAG_NAME_INPUT) {
     return false;
   }
   const inputEl = el as HTMLInputElement;
   const { type } = inputEl;
-  if (type === 'submit' || type === 'reset') {
+  if (FORM_FIELD_INPUT_EXCLUDED_TYPES.includes(
+    type.toLowerCase() as typeof FORM_FIELD_INPUT_EXCLUDED_TYPES[0],
+  )) {
     return false;
   }
   return Boolean(inputEl.name);
@@ -94,7 +124,7 @@ const getSelectFieldValue = (
     return Array.from(selectEl.options).filter((o) => o.selected).map((o) => o.value);
   }
   if (typeof options !== 'object' || options === null) {
-    throw new Error('Invalid options.');
+    throw new TypeError('Invalid options for getSelectFieldValue().');
   }
   return selectEl.value;
 };
@@ -119,9 +149,19 @@ const setSelectFieldValue = (selectEl: HTMLSelectElement, value: unknown) => {
 };
 
 /**
+ * Attribute name for the element's value.
+ */
+const ATTRIBUTE_VALUE = 'value' as const;
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as radio buttons.
+ */
+const INPUT_TYPE_RADIO = 'radio' as const;
+
+/**
  * Type for an `<input type="radio">` element.
  */
-export type HTMLInputRadioElement = HTMLInputElement & { type: 'radio' }
+export type HTMLInputRadioElement = HTMLInputElement & { type: typeof INPUT_TYPE_RADIO }
 
 /**
  * Options for getting an `<input type="radio">` element field value.
@@ -142,7 +182,7 @@ const getInputRadioFieldValue = (
     return inputEl.value;
   }
   if (typeof options !== 'object' || options === null) {
-    throw new Error('Invalid options.');
+    throw new TypeError('Invalid options for getInputRadioFieldValue().');
   }
   return null;
 };
@@ -156,15 +196,20 @@ const setInputRadioFieldValue = (
   inputEl: HTMLInputRadioElement,
   value: unknown,
 ) => {
-  const checkedValue = inputEl.getAttribute('value');
+  const valueWhenChecked = inputEl.getAttribute(ATTRIBUTE_VALUE);
   // eslint-disable-next-line no-param-reassign
-  inputEl.checked = checkedValue === value;
+  inputEl.checked = valueWhenChecked === value;
 };
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as checkboxes.
+ */
+const INPUT_TYPE_CHECKBOX = 'checkbox' as const;
 
 /**
  * Type for an `<input type="checkbox">` element.
  */
-export type HTMLInputCheckboxElement = HTMLInputElement & { type: 'checkbox' }
+export type HTMLInputCheckboxElement = HTMLInputElement & { type: typeof INPUT_TYPE_CHECKBOX }
 
 /**
  * Options for getting an `<input type="checkbox">` element field value.
@@ -180,6 +225,21 @@ type GetInputCheckboxFieldValueOptions = {
 }
 
 /**
+ * String values resolvable to an unchecked checkbox state.
+ */
+const INPUT_CHECKBOX_FALSY_VALUES = ['false', 'off', 'no', '0', ''] as const;
+
+/**
+ * Default value of the `<input type="checkbox">` when it is checked.
+ */
+const INPUT_CHECKBOX_DEFAULT_CHECKED_VALUE = 'on' as const;
+
+/**
+ * String values resolvable to a checked checkbox state.
+ */
+const INPUT_CHECKBOX_TRUTHY_VALUES = ['true', INPUT_CHECKBOX_DEFAULT_CHECKED_VALUE, 'yes', '1'] as const;
+
+/**
  * Gets the value of an `<input type="checkbox">` element.
  * @param inputEl - The element.
  * @param options - The options.
@@ -189,7 +249,7 @@ const getInputCheckboxFieldValue = (
   inputEl: HTMLInputCheckboxElement,
   options = {} as GetInputCheckboxFieldValueOptions,
 ) => {
-  const checkedValue = inputEl.getAttribute('value');
+  const checkedValue = inputEl.getAttribute(ATTRIBUTE_VALUE);
   if (checkedValue !== null) {
     if (inputEl.checked) {
       return inputEl.value;
@@ -200,20 +260,10 @@ const getInputCheckboxFieldValue = (
     return inputEl.checked;
   }
   if (inputEl.checked) {
-    return 'on';
+    return INPUT_CHECKBOX_DEFAULT_CHECKED_VALUE;
   }
   return null;
 };
-
-/**
- * String values resolvable to an unchecked checkbox state.
- */
-const INPUT_CHECKBOX_FALSY_VALUES = ['false', 'off', 'no', '0', ''];
-
-/**
- * String values resolvable to a checked checkbox state.
- */
-const INPUT_CHECKBOX_TRUTHY_VALUES = ['true', 'on', 'yes', '1'];
 
 /**
  * Sets the value of an `<input type="checkbox">` element.
@@ -224,20 +274,28 @@ const setInputCheckboxFieldValue = (
   inputEl: HTMLInputCheckboxElement,
   value: unknown,
 ) => {
-  const checkedValue = inputEl.getAttribute('value');
+  const checkedValue = inputEl.getAttribute(ATTRIBUTE_VALUE);
   if (checkedValue !== null) {
     // eslint-disable-next-line no-param-reassign
     inputEl.checked = value === checkedValue;
     return;
   }
 
-  if (INPUT_CHECKBOX_FALSY_VALUES.includes((value as string).toLowerCase()) || !value) {
+  if (
+    INPUT_CHECKBOX_FALSY_VALUES.includes(
+      (value as string).toLowerCase() as typeof INPUT_CHECKBOX_FALSY_VALUES[0],
+    )
+    || !value
+  ) {
     // eslint-disable-next-line no-param-reassign
     inputEl.checked = false;
     return;
   }
 
-  if (INPUT_CHECKBOX_TRUTHY_VALUES.includes((value as string).toLowerCase())
+  if (
+    INPUT_CHECKBOX_TRUTHY_VALUES.includes(
+      (value as string).toLowerCase() as typeof INPUT_CHECKBOX_TRUTHY_VALUES[0],
+    )
     || value === true
     || value === 1
   ) {
@@ -247,9 +305,14 @@ const setInputCheckboxFieldValue = (
 };
 
 /**
+ * Value of the `type` attribute for `<input>` elements considered as file upload components.
+ */
+const INPUT_TYPE_FILE = 'file' as const;
+
+/**
  * Type for an `<input type="file">` element.
  */
-export type HTMLInputFileElement = HTMLInputElement & { type: 'file' }
+export type HTMLInputFileElement = HTMLInputElement & { type: typeof INPUT_TYPE_FILE }
 
 /**
  * Options for getting an `<input type="file">` element field value.
@@ -287,17 +350,27 @@ const getInputFileFieldValue = (
 };
 
 /**
+ * Value of the `type` attribute for `<input>` elements considered as discrete number selectors.
+ */
+const INPUT_TYPE_NUMBER = 'number' as const;
+
+/**
  * Type for an `<input type="number">` element.
  */
-export type HTMLInputNumberElement = HTMLInputElement & { type: 'number' }
+export type HTMLInputNumberElement = HTMLInputElement & { type: typeof INPUT_TYPE_NUMBER }
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as continuous number selectors.
+ */
+const INPUT_TYPE_RANGE = 'range' as const;
 
 /**
  * Type for an `<input type="range">` element.
  */
-export type HTMLInputRangeElement = HTMLInputElement & { type: 'range' }
+export type HTMLInputRangeElement = HTMLInputElement & { type: typeof INPUT_TYPE_RANGE }
 
 /**
- * Type for an `<input` element that handles numeric values.
+ * Type for an `<input>` element that handles numeric values.
  */
 export type HTMLInputNumericElement = HTMLInputNumberElement | HTMLInputRangeElement;
 
@@ -307,7 +380,8 @@ export type HTMLInputNumericElement = HTMLInputNumberElement | HTMLInputRangeEle
 type GetInputNumberFieldValueOptions = {
   /**
    * Should we force values to be numeric?
-   * @note Form values are retrieved to be strings by default, hence this option.
+   *
+   * **Note:** Form values are retrieved to be strings by default, hence this option.
    */
   forceNumberValues?: true,
 }
@@ -342,14 +416,26 @@ const setInputNumericFieldValue = (
 };
 
 /**
+ * Value of the `type` attribute for `<input>` elements considered as date pickers.
+ */
+const INPUT_TYPE_DATE = 'date' as const;
+
+/**
  * Type for an `<input type="date">` element.
  */
-export type HTMLInputDateElement = HTMLInputElement & { type: 'date' }
+export type HTMLInputDateElement = HTMLInputElement & { type: typeof INPUT_TYPE_DATE }
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as date and time pickers.
+ */
+const INPUT_TYPE_DATETIME_LOCAL = 'datetime-local' as const;
 
 /**
  * Type for an `<input type="datetime-local">` element.
  */
-export type HTMLInputDateTimeLocalElement = HTMLInputElement & { type: 'datetime-local' }
+export type HTMLInputDateTimeLocalElement = HTMLInputElement & {
+  type: typeof INPUT_TYPE_DATETIME_LOCAL,
+}
 
 /**
  * Type for an `<input>` element.that handles date values.
@@ -384,6 +470,11 @@ const getInputDateLikeFieldValue = (
 };
 
 /**
+ * ISO format for dates.
+ */
+const DATE_FORMAT_ISO = 'yyyy-MM-DD' as const;
+
+/**
  * Sets the value of an `<input type="date">` element.
  * @param inputEl - The element.
  * @param value - Value of the input element.
@@ -392,21 +483,20 @@ const setInputDateLikeFieldValue = (
   inputEl: HTMLInputDateLikeElement,
   value: unknown,
 ) => {
-  if (inputEl.type.toLowerCase() === 'date') {
+  if (inputEl.type.toLowerCase() === INPUT_TYPE_DATE) {
     // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(value as ConstructorParameters<typeof Date>[0])
       .toISOString()
-      .slice(0, 'yyyy-MM-DD'.length);
+      .slice(0, DATE_FORMAT_ISO.length);
     return;
   }
 
-  if (inputEl.type.toLowerCase() === 'datetime-local') {
+  if (inputEl.type.toLowerCase() === INPUT_TYPE_DATETIME_LOCAL) {
     // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(value as ConstructorParameters<typeof Date>[0])
       .toISOString()
       .slice(0, -1); // remove extra 'Z' suffix
   }
-  // inputEl.valueAsDate = new Date(value as ConstructorParameters<typeof Date>[0]);
 };
 
 /**
@@ -430,19 +520,18 @@ const getInputFieldValue = (
   options = {} as GetInputFieldValueOptions,
 ) => {
   switch (inputEl.type.toLowerCase()) {
-    case 'checkbox':
+    case INPUT_TYPE_CHECKBOX:
       return getInputCheckboxFieldValue(inputEl as HTMLInputCheckboxElement, options);
-    case 'radio':
+    case INPUT_TYPE_RADIO:
       return getInputRadioFieldValue(inputEl as HTMLInputRadioElement, options);
-    case 'file':
+    case INPUT_TYPE_FILE:
       return getInputFileFieldValue(inputEl as HTMLInputFileElement, options);
-    case 'number':
-    case 'range':
+    case INPUT_TYPE_NUMBER:
+    case INPUT_TYPE_RANGE:
       return getInputNumericFieldValue(inputEl as HTMLInputNumericElement, options);
-    case 'date':
-    case 'datetime-local':
+    case INPUT_TYPE_DATE:
+    case INPUT_TYPE_DATETIME_LOCAL:
       return getInputDateLikeFieldValue(inputEl as HTMLInputDateLikeElement, options);
-      // TODO week and month
     default:
       break;
   }
@@ -461,22 +550,21 @@ const setInputFieldValue = (
   value: unknown,
 ) => {
   switch (inputEl.type.toLowerCase()) {
-    case 'checkbox':
+    case INPUT_TYPE_CHECKBOX:
       setInputCheckboxFieldValue(inputEl as HTMLInputCheckboxElement, value);
       return;
-    case 'radio':
+    case INPUT_TYPE_RADIO:
       setInputRadioFieldValue(inputEl as HTMLInputRadioElement, value);
       return;
-    case 'file':
+    case INPUT_TYPE_FILE:
       // We shouldn't tamper with file inputs! This will not have any implementation.
       return;
-    case 'number':
-    case 'range':
-      // eslint-disable-next-line no-param-reassign
+    case INPUT_TYPE_NUMBER:
+    case INPUT_TYPE_RANGE:
       setInputNumericFieldValue(inputEl as HTMLInputNumericElement, value);
       return;
-    case 'date':
-    case 'datetime-local':
+    case INPUT_TYPE_DATE:
+    case INPUT_TYPE_DATETIME_LOCAL:
       setInputDateLikeFieldValue(inputEl as HTMLInputDateLikeElement, value);
       return;
     default:
@@ -494,6 +582,9 @@ type GetFieldValueOptions
   & GetSelectValueOptions
   & GetInputFieldValueOptions
 
+/**
+ * Types for elements with names (i.e. can be assigned the `name` attribute).
+ */
 type HTMLElementWithName
   = (HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement);
 
@@ -504,12 +595,12 @@ type HTMLElementWithName
  * @returns Value of the field element.
  */
 export const getFieldValue = (el: HTMLElement, options = {} as GetFieldValueOptions) => {
-  switch (el.tagName.toLowerCase()) {
-    case 'textarea':
+  switch (el.tagName) {
+    case TAG_NAME_TEXTAREA:
       return getTextAreaFieldValue(el as HTMLTextAreaElement, options);
-    case 'select':
+    case TAG_NAME_SELECT:
       return getSelectFieldValue(el as HTMLSelectElement, options);
-    case 'input':
+    case TAG_NAME_INPUT:
       return getInputFieldValue(el as HTMLInputElement, options);
     default:
       break;
@@ -525,14 +616,14 @@ export const getFieldValue = (el: HTMLElement, options = {} as GetFieldValueOpti
  * @param value - Value of the field element.
  */
 const setFieldValue = (el: HTMLElement, value: unknown) => {
-  switch (el.tagName.toLowerCase()) {
-    case 'textarea':
+  switch (el.tagName) {
+    case TAG_NAME_TEXTAREA:
       setTextAreaFieldValue(el as HTMLTextAreaElement, value);
       return;
-    case 'select':
+    case TAG_NAME_SELECT:
       setSelectFieldValue(el as HTMLSelectElement, value);
       return;
-    case 'input':
+    case TAG_NAME_INPUT:
       setInputFieldValue(el as HTMLInputElement, value);
       return;
     default:
@@ -544,21 +635,31 @@ const setFieldValue = (el: HTMLElement, value: unknown) => {
 };
 
 /**
+ * Attribute name for the element's field name.
+ */
+const ATTRIBUTE_NAME = 'name' as const;
+
+/**
+ * Attribute name for the element's disabled status.
+ */
+const ATTRIBUTE_DISABLED = 'disabled' as const;
+
+/**
  * Determines if an element is a named and enabled form field.
  * @param el - The element.
  * @returns Value determining if the element is a named and enabled form field.
  */
 export const isNamedEnabledFormFieldElement = (el: HTMLElement) => {
-  if (!('name' in el)) {
+  if (!(ATTRIBUTE_NAME in el)) {
     return false;
   }
-  if (typeof el.name !== 'string') {
+  if (typeof el[ATTRIBUTE_NAME] !== 'string') {
     return false;
   }
   const namedEl = el as unknown as HTMLElementWithName;
   return (
-    el.name.length > 0
-    && !('disabled' in namedEl && Boolean(namedEl.disabled))
+    el[ATTRIBUTE_NAME].length > 0
+    && !(ATTRIBUTE_DISABLED in namedEl && Boolean(namedEl[ATTRIBUTE_DISABLED]))
     && isFormFieldElement(namedEl)
   );
 };
@@ -574,22 +675,67 @@ type GetFormValuesOptions = GetFieldValueOptions & {
 }
 
 /**
+ * Tag name for the `<form>` element.
+ */
+const TAG_NAME_FORM = 'FORM' as const;
+
+/**
+ * Checks if the provided value is a valid form.
+ * @param maybeForm - The value to check.
+ * @param context - Context where this function is run, which are used for error messages.
+ */
+const assertIsFormElement = (maybeForm: unknown, context: string) => {
+  const formType = typeof maybeForm;
+  if (formType !== 'object') {
+    throw new TypeError(
+      `Invalid form argument provided for ${context}(). The argument value ${String(maybeForm)} is of type "${formType}". Expected an HTML element.`,
+    );
+  }
+
+  if (!maybeForm) {
+    // Don't accept `null`.
+    throw new TypeError(`No <form> element was provided for ${context}().`);
+  }
+
+  const element = maybeForm as HTMLElement;
+  // We're not so strict when it comes to checking if the passed value for `maybeForm` is a
+  // legitimate HTML element.
+
+  if (element.tagName !== TAG_NAME_FORM) {
+    throw new TypeError(
+      `Invalid form argument provided for ${context}(). Expected <form>, got <${element.tagName.toLowerCase()}>.`,
+    );
+  }
+};
+
+/**
+ * Filters the form elements that can be processed.
+ * @param form - The form element.
+ * @returns Array of key-value pairs for the field names and field elements.
+ */
+const filterFieldElements = (form: HTMLFormElement) => {
+  const formElements = form.elements as unknown as Record<string | number, HTMLElement>;
+  const allFormFieldElements = Object.entries<HTMLElement>(formElements);
+  return allFormFieldElements.filter(([k, el]) => (
+    // We use the number-indexed elements because they are consistent to enumerate.
+    !Number.isNaN(Number(k))
+
+    // Only the enabled/read-only elements can be enumerated.
+    && isNamedEnabledFormFieldElement(el)
+  )) as [string, HTMLElementWithName][];
+};
+
+/**
  * Gets the values of all the fields within the form through accessing the DOM nodes.
  * @param form - The form.
  * @param options - The options.
  * @returns The form values.
  */
 export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValuesOptions) => {
-  if (!form) {
-    throw new TypeError('Invalid form element.');
-  }
-  const formElements = form.elements as unknown as Record<string | number, HTMLElement>;
-  const allFormFieldElements = Object.entries<HTMLElement>(formElements);
-  const indexedNamedEnabledFormFieldElements = allFormFieldElements.filter(([k, el]) => (
-    !Number.isNaN(Number(k))
-    && isNamedEnabledFormFieldElement(el)
-  )) as [string, HTMLElementWithName][];
-  const fieldValues = indexedNamedEnabledFormFieldElements.reduce(
+  assertIsFormElement(form, 'getFormValues');
+
+  const fieldElements = filterFieldElements(form);
+  const fieldValues = fieldElements.reduce(
     (theFormValues, [, el]) => {
       const fieldValue = getFieldValue(el, options);
       if (fieldValue === null) {
@@ -643,27 +789,35 @@ export const setFormValues = (
   form: HTMLFormElement,
   values: ConstructorParameters<typeof URLSearchParams>[0] | Record<string, unknown>,
 ) => {
-  if (!form) {
-    throw new TypeError('Invalid form element.');
+  assertIsFormElement(form, 'getFormValues');
+
+  const valuesType = typeof values;
+  if (!['string', 'object'].includes(valuesType)) {
+    throw new TypeError(`Invalid values argument provided for setFormValues(). Expected "object" or "string", got ${valuesType}`);
   }
+
+  if (!values) {
+    return;
+  }
+
+  const fieldElements = filterFieldElements(form);
   const objectValues = new URLSearchParams(values as unknown as string | Record<string, string>);
-  const formElements = form.elements as unknown as Record<string | number, HTMLElement>;
-  const allFormFieldElements = Object.entries<HTMLElement>(formElements);
-  const indexedNamedEnabledFormFieldElements = allFormFieldElements.filter(([k, el]) => (
-    !Number.isNaN(Number(k))
-    && isNamedEnabledFormFieldElement(el)
-  )) as [string, HTMLElementWithName][];
-  indexedNamedEnabledFormFieldElements
+  fieldElements
     .filter(([, el]) => objectValues.has(el.name))
     .forEach(([, el]) => {
-      // eslint-disable-next-line no-param-reassign
       setFieldValue(el, objectValues.get(el.name));
     });
 };
 
-// Default import is deprecated. Use named export instead. This default export is only for
-// compatibility.
+/**
+ * Gets the values of all the fields within the form through accessing the DOM nodes.
+ * @deprecated Default import is deprecated. Use named export `getFormValues()` instead. This
+ * default export is only for backwards compatibility.
+ * @param args - The arguments.
+ * @see getFormValues
+ */
 export default (...args: Parameters<typeof getFormValues>) => {
-  console.warn('Default import is deprecated. Use named export instead. This default export is only for compatibility.');
+  // eslint-disable-next-line no-console
+  console.warn('Default import is deprecated. Use named export `getFormValues()` instead. This default export is only for backwards compatibility.');
   return getFormValues(...args);
 };

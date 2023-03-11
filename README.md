@@ -121,4 +121,4 @@ form.addEventListener('submit', async e => {
 
 ## Tests
 
-The library has been tested on the static DOM using JSDOM and Jest, and the real dynamic DOM using Cypress.
+The library has been tested on the static DOM using JSDOM, and the real dynamic DOM using Cypress.
