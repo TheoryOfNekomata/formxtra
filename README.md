@@ -1,41 +1,10 @@
 # formxtra
 
-_(read "form extra")_
+![formxtra logo](./docs/assets/formxtra.svg)
+
+**The companion for Web forms!**
 
 Extract and set form values through the DOM.
-
-## Motivation
-
-Forms are used to package related data, typically sent to an external location or processed internally. In the browser,
-the default behavior of submitting form data is not always preferred, as this is done through loading or reloading a
-document as soon as the form is submitted. In addition, [applications have limited control over how the data are
-formatted on submission](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#dom-fs-enctype) with
-this approach. This is why the new way of sending form data is done through AJAX/fetch requests, wherein the data are
-serialized into formats like JSON. To turn form data into a specific format requires access to the elements holding the
-values to each field in the form.
-
-Libraries made for extracting form values query field elements in the DOM, which is inefficient since they need to
-traverse the DOM tree in some way, using methods such as `document.getElementsByTagName()` and
-`document.querySelector()`. This is the same case with setting each form values for, say, prefilling values to save
-time. It might be a simple improvement to the user experience, but the logic behind can be unwieldy as there may be
-inconsistencies in setting up each field value depending on the form library being used.
-
-Upon retrieving the field values somehow, some libraries attempt to duplicate the values of the fields as they change,
-for instance by attaching event listeners and storing the new values into some internal object or map. This is then
-retrieved by some other exposed function or mechanism within that library. This is common with reactive frameworks,
-where changes to the document are essential to establish functionality and improved user experience.
-
----
-
-With `formxtra`, there is no need to traverse elements for individual fields to get and set their values, provided they are:
-
-* Associated to the form (either as a descendant of the `<form>` element or [associated through the `form=""`
-attribute](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form))
-* Has a valid `name`
-
-The values of these fields can be easily extracted and set, using the `form.elements` attribute built-in to the DOM.
-With this, only the reference to the form is needed. The current state of the field elements is already stored in the
-DOM, waiting to be accessed.
 
 ## Installation
 
@@ -122,3 +91,38 @@ form.addEventListener('submit', async e => {
 ## Tests
 
 The library has been tested on the static DOM using JSDOM, and the real dynamic DOM using Cypress.
+
+## Motivation
+
+Forms are used to package related data, typically sent to an external location or processed internally. In the browser,
+the default behavior of submitting form data is not always preferred, as this is done through loading or reloading a
+document as soon as the form is submitted. In addition, [applications have limited control over how the data are
+formatted on submission](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#dom-fs-enctype) with
+this approach. This is why the new way of sending form data is done through AJAX/fetch requests, wherein the data are
+serialized into formats like JSON. To turn form data into a specific format requires access to the elements holding the
+values to each field in the form.
+
+Libraries made for extracting form values query field elements in the DOM, which is inefficient since they need to
+traverse the DOM tree in some way, using methods such as `document.getElementsByTagName()` and
+`document.querySelector()`. This is the same case with setting each form values for, say, prefilling values to save
+time. It might be a simple improvement to the user experience, but the logic behind can be unwieldy as there may be
+inconsistencies in setting up each field value depending on the form library being used.
+
+Upon retrieving the field values somehow, some libraries attempt to duplicate the values of the fields as they change,
+for instance by attaching event listeners and storing the new values into some internal object or map. This is then
+retrieved by some other exposed function or mechanism within that library. This is common with reactive frameworks,
+where changes to the document are essential to establish functionality and improved user experience.
+
+---
+
+With `formxtra`, there is no need to traverse elements for individual fields to get and set their values, provided they are:
+
+* Associated to the form (either as a descendant of the `<form>` element or [associated through the `form=""`
+  attribute](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fae-form))
+* Has a valid `name`
+
+The values of these fields can be easily extracted and set, using the `form.elements` attribute built-in to the DOM.
+With this, only the reference to the form is needed. The current state of the field elements is already stored in the
+DOM, waiting to be accessed.
+
+Additional documentation can be found on the [`docs` directory](./docs).
