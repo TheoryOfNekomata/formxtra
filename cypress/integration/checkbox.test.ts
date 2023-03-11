@@ -100,7 +100,7 @@ describe('checkbox', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>Checkbox/Duplicate</title>
 				</head>
 				<body>
 					<form>

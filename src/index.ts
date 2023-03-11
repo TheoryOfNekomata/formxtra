@@ -483,14 +483,22 @@ const DATE_FORMAT_ISO = 'yyyy-MM-DD' as const;
  * Sets the value of an `<input type="date">` element.
  * @param inputEl - The element.
  * @param value - Value of the input element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param totalOfName - How many fields with the same name are in the form?
  */
 const setInputDateLikeFieldValue = (
   inputEl: HTMLInputDateLikeElement,
   value: unknown,
+  nthOfName: number,
+  totalOfName: number,
 ) => {
+  const valueArray = Array.isArray(value) ? value : [value];
+
   if (inputEl.type.toLowerCase() === INPUT_TYPE_DATE) {
     // eslint-disable-next-line no-param-reassign
-    inputEl.value = new Date(value as ConstructorParameters<typeof Date>[0])
+    inputEl.value = new Date(
+      valueArray[totalOfName > 1 ? nthOfName : 0] as ConstructorParameters<typeof Date>[0],
+    )
       .toISOString()
       .slice(0, DATE_FORMAT_ISO.length);
     return;
@@ -498,7 +506,9 @@ const setInputDateLikeFieldValue = (
 
   if (inputEl.type.toLowerCase() === INPUT_TYPE_DATETIME_LOCAL) {
     // eslint-disable-next-line no-param-reassign
-    inputEl.value = new Date(value as ConstructorParameters<typeof Date>[0])
+    inputEl.value = new Date(
+      valueArray[totalOfName > 1 ? nthOfName : 0] as ConstructorParameters<typeof Date>[0],
+    )
       .toISOString()
       .slice(0, -1); // remove extra 'Z' suffix
   }
@@ -574,7 +584,12 @@ const setInputFieldValue = (
       return;
     case INPUT_TYPE_DATE:
     case INPUT_TYPE_DATETIME_LOCAL:
-      setInputDateLikeFieldValue(inputEl as HTMLInputDateLikeElement, value);
+      setInputDateLikeFieldValue(
+        inputEl as HTMLInputDateLikeElement,
+        value,
+        nthOfName,
+        totalOfName,
+      );
       return;
     default:
       break;

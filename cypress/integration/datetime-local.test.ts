@@ -1,20 +1,20 @@
-import { getFormValues, LineEnding, setFormValues } from '../../src';
+import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('text', () => {
+describe('date', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>Datetime-Local/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" />
+							<input type="datetime-local" name="hello" value="2003-04-06T13:37" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -34,7 +34,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: '2003-04-06T13:37',
 				},
 			});
 		});
@@ -46,14 +46,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Disabled</title>
+					<title>Datetime-Local/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="datetime-local" name="hello" value="2003-06-09T13:37"
 								disabled
 							/>
 						</label>
@@ -85,7 +85,7 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Outside</title>
+					<title>Datetime-Local/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -93,7 +93,7 @@ describe('text', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="text" name="hello" value="Hi" form="form" />
+						<input type="datetime-local" name="hello" value="2003-04-20T13:37" form="form" />
 					</label>
 				</body>
 			</html>
@@ -111,7 +111,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: '2003-04-20T13:37',
 				},
 			});
 		});
@@ -130,7 +130,7 @@ describe('text', () => {
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="text" name="hello" value="2003-11-11T13:37"
 								readonly
 							/>
 						</label>
@@ -152,7 +152,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: '2003-11-11T13:37',
 				},
 			});
 		});
@@ -164,13 +164,13 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Programmatic Value Setting</title>
+					<title>Text/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" />
+							<input type="datetime-local" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -182,7 +182,7 @@ describe('text', () => {
 			utils.test({
 				action: (cy: any) => cy.get('[type="submit"]'),
 				preAction: (form: HTMLFormElement) => {
-					setFormValues(form, { hello: 'Hi', })
+					setFormValues(form, { hello: new Date('2000-01-01T13:37'), })
 				},
 				test: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
@@ -193,91 +193,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
-				},
-			});
-		});
-	});
-
-	describe('textarea', () => {
-		beforeEach(utils.setup(`
-			<!DOCTYPE html>
-			<html lang="en-PH">
-				<head>
-					<meta charset="UTF-8">
-					<title>Text/Textarea</title>
-				</head>
-				<body>
-					<form>
-						<label>
-							<span>Hello</span>
-							<textarea name="hello"></textarea>
-						</label>
-						<button type="submit">Submit</button>
-					</form>
-				</body>
-			</html>
-		`));
-
-		it('should read LF line breaks', () => {
-			utils.test({
-				action: (cy: any) => {
-					cy.get('[name="hello"]')
-						.type('Hi\nHello', { parseSpecialCharSequences: false })
-					return cy.get('[type="submit"]')
-				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, lineEndings: LineEnding.LF }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi\nHello',
-				},
-			});
-		});
-
-		it('should read CR line breaks', () => {
-			utils.test({
-				action: (cy: any) => {
-					cy.get('[name="hello"]')
-						.type('Hi\rHello', { parseSpecialCharSequences: false })
-					return cy.get('[type="submit"]')
-				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, lineEndings: LineEnding.CR }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi\rHello',
-				},
-			});
-		});
-
-		it('should read CRLF line breaks', () => {
-			utils.test({
-				action: (cy: any) => {
-					cy.get('[name="hello"]')
-						.type('Hi\r\nHello', { parseSpecialCharSequences: false })
-					return cy.get('[type="submit"]')
-				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, lineEndings: LineEnding.CRLF }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi\r\nHello',
+					hello: '2000-01-01T13:37',
 				},
 			});
 		});
@@ -289,17 +205,17 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Duplicate</title>
+					<title>Datetime-Local/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="text" value="value" name="hello"/>
+							<input id="hello1" type="datetime-local" name="hello" value="2007-07-07T13:37"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="text" value="another value" name="hello"/>
+							<input id="hello2" type="datetime-local" name="hello" value="2008-08-08T13:37"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -319,7 +235,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['value', 'another value'],
+					hello: ['2007-07-07T13:37', '2008-08-08T13:37'],
 				},
 			});
 		});
@@ -328,7 +244,7 @@ describe('text', () => {
 			utils.test({
 				preAction: (form: HTMLFormElement) => {
 					setFormValues(form, {
-						hello: ['new value 1', 'another value 2'],
+						hello: ['2006-06-06T13:37', '2005-05-05T13:37'],
 					})
 				},
 				action: (cy: any) => cy.get('[type="submit"]'),
@@ -341,7 +257,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['new value 1', 'another value 2'],
+					hello: ['2006-06-06T13:37', '2005-05-05T13:37'],
 				},
 			});
 		});
