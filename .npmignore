@@ -11,3 +11,4 @@ tsconfig.eslint.json
 tsconfig.json
 vitest.config.js
 yarn.lock
+coverage/
