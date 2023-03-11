@@ -781,7 +781,8 @@ export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValu
 };
 
 /**
- * Sets the values of all the fields within the form through accessing the DOM nodes.
+ * Sets the values of all the fields within the form through accessing the DOM nodes. Partial values
+ * may be passed to set values only to certain form fields.
  * @param form - The form.
  * @param values - The form values.
  */
