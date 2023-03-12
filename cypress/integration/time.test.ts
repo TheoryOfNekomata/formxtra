@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('month', () => {
+describe('time', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Month/Basic</title>
+					<title>Time/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="month" name="hello" value="2003-05" />
+							<input type="time" name="hello" value="13:37" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -34,20 +34,7 @@ describe('month', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-05',
-				},
-			});
-		});
-
-		it('should enable Date representation', () => {
-			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
-					const values = getFormValues(form, { submitter, forceDateValues: true });
-					// somehow, checking instanceof Date fails here, because we're using an artificial date
-					// object?
-					const testDate = new Date(values.hello as Date);
-					expect((values.hello as Date).getTime()).toBe(testDate.getTime());
+					hello: '13:37',
 				},
 			});
 		});
@@ -59,14 +46,14 @@ describe('month', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Month/Disabled</title>
+					<title>Time/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="month" name="hello" value="2003-05"
+								type="time" name="hello" value="13:37"
 								disabled
 							/>
 						</label>
@@ -98,7 +85,7 @@ describe('month', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Month/Outside</title>
+					<title>Time/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -106,7 +93,7 @@ describe('month', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="month" name="hello" value="2003-05" form="form" />
+						<input type="time" name="hello" value="13:37" form="form" />
 					</label>
 				</body>
 			</html>
@@ -124,7 +111,7 @@ describe('month', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-05',
+					hello: '13:37',
 				},
 			});
 		});
@@ -136,14 +123,14 @@ describe('month', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Readonly</title>
+					<title>Time/Readonly</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="2003-05"
+								type="time" name="hello" value="13:37"
 								readonly
 							/>
 						</label>
@@ -165,7 +152,7 @@ describe('month', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-05',
+					hello: '13:37',
 				},
 			});
 		});
@@ -177,13 +164,13 @@ describe('month', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Month/Programmatic Value Setting</title>
+					<title>Time/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="month" name="hello" />
+							<input type="time" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -195,7 +182,7 @@ describe('month', () => {
 			utils.test({
 				action: (cy: any) => cy.get('[type="submit"]'),
 				preAction: (form: HTMLFormElement) => {
-					setFormValues(form, { hello: '2003-05', })
+					setFormValues(form, { hello: '13:37', })
 				},
 				test: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
@@ -206,7 +193,7 @@ describe('month', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-05',
+					hello: '13:37',
 				},
 			});
 		});
@@ -218,17 +205,17 @@ describe('month', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Month/Duplicate</title>
+					<title>Time/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="month" name="hello" value="2003-05"/>
+							<input id="hello1" type="time" value="13:37" name="hello"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="month" name="hello" value="2003-06"/>
+							<input id="hello2" type="time" value="06:09" name="hello"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -248,7 +235,7 @@ describe('month', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['2003-05', '2003-06'],
+					hello: ['13:37', '06:09'],
 				},
 			});
 		});
@@ -257,7 +244,7 @@ describe('month', () => {
 			utils.test({
 				preAction: (form: HTMLFormElement) => {
 					setFormValues(form, {
-						hello: ['2003-04', '2003-02'],
+						hello: ['04:20', '05:30'],
 					})
 				},
 				action: (cy: any) => cy.get('[type="submit"]'),
@@ -270,7 +257,7 @@ describe('month', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['2003-04', '2003-02'],
+					hello: ['04:20', '05:30'],
 				},
 			});
 		});

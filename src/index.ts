@@ -44,8 +44,9 @@ const FORM_FIELD_INPUT_EXCLUDED_TYPES = ['submit', 'reset'] as const;
 /**
  * Checks if an element can hold a custom (user-inputted) field value.
  * @param el - The element.
+ * @returns Value determining if an element can hold a custom (user-inputted) field value.
  */
-export const isFormFieldElement = (el: HTMLElement) => {
+export const isFieldElement = (el: HTMLElement) => {
   const { tagName } = el;
   if (FORM_FIELD_ELEMENT_TAG_NAMES.includes(tagName as typeof FORM_FIELD_ELEMENT_TAG_NAMES[0])) {
     return true;
@@ -92,15 +93,15 @@ const getTextAreaFieldValue = (
  * @param textareaEl - The element.
  * @param value - Value of the textarea element.
  * @param nthOfName - What order is this field in with respect to fields of the same name?
- * @param totalOfName - How many fields with the same name are in the form?
+ * @param elementsOfSameName - How many fields with the same name are in the form?
  */
 const setTextAreaFieldValue = (
   textareaEl: HTMLTextAreaElement,
   value: unknown,
   nthOfName: number,
-  totalOfName: number,
+  elementsOfSameName: HTMLTextAreaElement[],
 ) => {
-  if (Array.isArray(value) && totalOfName > 1) {
+  if (Array.isArray(value) && elementsOfSameName.length > 1) {
     // eslint-disable-next-line no-param-reassign
     textareaEl.value = value[nthOfName];
     return;
@@ -128,19 +129,54 @@ const getSelectFieldValue = (
  * Sets the value of a `<select>` element.
  * @param selectEl - The element.
  * @param value - Value of the select element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param elementsOfSameName - How many fields with the same name are in the form?
  */
-const setSelectFieldValue = (selectEl: HTMLSelectElement, value: unknown) => {
-  Array.from(selectEl.options)
-    .filter((o) => {
-      if (Array.isArray(value)) {
-        return (value as string[]).includes(o.value);
-      }
-      return o.value === value;
-    })
-    .forEach((el) => {
+const setSelectFieldValue = (
+  selectEl: HTMLSelectElement,
+  value: unknown,
+  nthOfName: number,
+  elementsOfSameName: HTMLSelectElement[],
+) => {
+  if (elementsOfSameName.length > 1) {
+    const valueArray = value as unknown[];
+    const valueArrayDepth = valueArray.every((v) => Array.isArray(v)) ? 2 : 1;
+    if (valueArrayDepth > 1) {
+      // We check if values are [['foo', 'bar], ['baz', 'quux'], 'single value]
+      // If this happens, all values must correspond to a <select multiple> element.
+      const currentValue = valueArray[nthOfName] as string[];
+      Array.from(selectEl.options).forEach((el) => {
+        // eslint-disable-next-line no-param-reassign
+        el.selected = currentValue.includes(el.value);
+      });
+      return;
+    }
+
+    // Else we're just checking if these values are in the value array provided.
+    // They will apply across all select elements.
+
+    if (elementsOfSameName.some((el) => el.multiple)) {
+      Array.from(selectEl.options).forEach((el) => {
+        // eslint-disable-next-line no-param-reassign
+        el.selected = (value as string[]).includes(el.value);
+      });
+      return;
+    }
+
+    Array.from(selectEl.options).forEach((el) => {
       // eslint-disable-next-line no-param-reassign
-      el.selected = true;
+      el.selected = el.value === (value as string[])[nthOfName];
     });
+
+    return;
+  }
+
+  Array.from(selectEl.options).forEach((el) => {
+    // eslint-disable-next-line no-param-reassign
+    el.selected = Array.isArray(value)
+      ? (value as string[]).includes(el.value)
+      : el.value === value;
+  });
 };
 
 /**
@@ -248,6 +284,45 @@ const getInputCheckboxFieldValue = (
   return null;
 };
 
+const parseBooleanValues = (value: unknown) => {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const normalizedValue = value.toLowerCase();
+    if (INPUT_CHECKBOX_FALSY_VALUES.includes(
+      normalizedValue as typeof INPUT_CHECKBOX_FALSY_VALUES[0],
+    )) {
+      return false;
+    }
+
+    if (INPUT_CHECKBOX_TRUTHY_VALUES.includes(
+      normalizedValue as typeof INPUT_CHECKBOX_TRUTHY_VALUES[0],
+    )) {
+      return true;
+    }
+  }
+
+  if (typeof value === 'number') {
+    if (value === 0) {
+      return false;
+    }
+
+    if (value === 1) {
+      return true;
+    }
+  }
+
+  if (typeof value === 'object') {
+    if (value === null) {
+      return false;
+    }
+  }
+
+  return undefined;
+};
+
 /**
  * Sets the value of an `<input type="checkbox">` element.
  * @param inputEl - The element.
@@ -269,26 +344,10 @@ const setInputCheckboxFieldValue = (
     return;
   }
 
-  if (
-    INPUT_CHECKBOX_FALSY_VALUES.includes(
-      (value as string).toLowerCase() as typeof INPUT_CHECKBOX_FALSY_VALUES[0],
-    )
-    || !value
-  ) {
+  const newValue = parseBooleanValues(value);
+  if (typeof newValue === 'boolean') {
     // eslint-disable-next-line no-param-reassign
-    inputEl.checked = false;
-    return;
-  }
-
-  if (
-    INPUT_CHECKBOX_TRUTHY_VALUES.includes(
-      (value as string).toLowerCase() as typeof INPUT_CHECKBOX_TRUTHY_VALUES[0],
-    )
-    || value === true
-    || value === 1
-  ) {
-    // eslint-disable-next-line no-param-reassign
-    inputEl.checked = true;
+    inputEl.checked = newValue;
   }
 };
 
@@ -324,9 +383,6 @@ const getInputFileFieldValue = (
   options = {} as GetInputFileFieldValueOptions,
 ) => {
   const { files } = inputEl;
-  if ((files as unknown) === null) {
-    return null;
-  }
   if (options.getFileObjects) {
     return files;
   }
@@ -395,17 +451,17 @@ const getInputNumericFieldValue = (
  * @param inputEl - The element.
  * @param value - Value of the input element.
  * @param nthOfName - What order is this field in with respect to fields of the same name?
- * @param totalOfName - How many fields with the same name are in the form?
+ * @param elementsWithSameName - How many fields with the same name are in the form?
  */
 const setInputNumericFieldValue = (
   inputEl: HTMLInputNumericElement,
   value: unknown,
   nthOfName: number,
-  totalOfName: number,
+  elementsWithSameName: HTMLInputNumericElement[],
 ) => {
   const valueArray = Array.isArray(value) ? value : [value];
   // eslint-disable-next-line no-param-reassign
-  inputEl.valueAsNumber = Number(valueArray[totalOfName > 1 ? nthOfName : 0]);
+  inputEl.valueAsNumber = Number(valueArray[elementsWithSameName.length > 1 ? nthOfName : 0]);
 };
 
 /**
@@ -472,7 +528,11 @@ const getInputDateLikeFieldValue = (
   options = {} as GetInputDateFieldValueOptions,
 ) => {
   if (options.forceDateValues) {
-    return inputEl.valueAsDate;
+    return (
+      // somehow datetime-local does not return us the current `valueAsDate` when the string
+      // representation in `value` is incomplete.
+      inputEl.type === INPUT_TYPE_DATETIME_LOCAL ? new Date(inputEl.value) : inputEl.valueAsDate
+    );
   }
   return inputEl.value;
 };
@@ -492,20 +552,22 @@ const DATE_FORMAT_ISO_MONTH = 'yyyy-MM' as const;
  * @param inputEl - The element.
  * @param value - Value of the input element.
  * @param nthOfName - What order is this field in with respect to fields of the same name?
- * @param totalOfName - How many fields with the same name are in the form?
+ * @param elementsOfSameName - How many fields with the same name are in the form?
  */
 const setInputDateLikeFieldValue = (
   inputEl: HTMLInputDateLikeElement,
   value: unknown,
   nthOfName: number,
-  totalOfName: number,
+  elementsOfSameName: HTMLInputDateLikeElement[],
 ) => {
   const valueArray = Array.isArray(value) ? value : [value];
+  const hasMultipleElementsOfSameName = elementsOfSameName.length > 1;
+  const elementIndex = hasMultipleElementsOfSameName ? nthOfName : 0;
 
   if (inputEl.type.toLowerCase() === INPUT_TYPE_DATE) {
     // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(
-      valueArray[totalOfName > 1 ? nthOfName : 0] as ConstructorParameters<typeof Date>[0],
+      valueArray[elementIndex] as ConstructorParameters<typeof Date>[0],
     )
       .toISOString()
       .slice(0, DATE_FORMAT_ISO_DATE.length);
@@ -515,7 +577,7 @@ const setInputDateLikeFieldValue = (
   if (inputEl.type.toLowerCase() === INPUT_TYPE_DATETIME_LOCAL) {
     // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(
-      valueArray[totalOfName > 1 ? nthOfName : 0] as ConstructorParameters<typeof Date>[0],
+      valueArray[elementIndex] as ConstructorParameters<typeof Date>[0],
     )
       .toISOString()
       .slice(0, -1); // remove extra 'Z' suffix
@@ -524,7 +586,7 @@ const setInputDateLikeFieldValue = (
   if (inputEl.type.toLowerCase() === INPUT_TYPE_MONTH) {
     // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(
-      valueArray[totalOfName > 1 ? nthOfName : 0] as ConstructorParameters<typeof Date>[0],
+      valueArray[elementIndex] as ConstructorParameters<typeof Date>[0],
     )
       .toISOString()
       .slice(0, DATE_FORMAT_ISO_MONTH.length); // remove extra 'Z' suffix
@@ -581,6 +643,11 @@ const INPUT_TYPE_HIDDEN = 'hidden' as const;
 const INPUT_TYPE_COLOR = 'color' as const;
 
 /**
+ * Value of the `type` attribute for `<input>` elements considered as time pickers.
+ */
+const INPUT_TYPE_TIME = 'time' as const;
+
+/**
  * Gets the value of an `<input>` element.
  * @param inputEl - The element.
  * @param options - The options.
@@ -612,12 +679,13 @@ const getInputFieldValue = (
     case INPUT_TYPE_PASSWORD:
     case INPUT_TYPE_HIDDEN:
     case INPUT_TYPE_COLOR:
+    case INPUT_TYPE_TIME:
     default:
       break;
   }
 
-  // force return `null` for custom elements supporting setting values.
-  return inputEl.value ?? null;
+  // don't force returning `null` for custom elements supporting setting values.
+  return inputEl.value;
 };
 
 /**
@@ -625,7 +693,7 @@ const getInputFieldValue = (
  * @param inputEl - The element.
  * @param value - Value of the input element.
  * @param nthOfName - What order is this field in with respect to fields of the same name?
- * @param totalOfName - How many fields with the same name are in the form?
+ * @param elementsWithSameName - How many fields with the same name are in the form?
  * @note This function is a noop for `<input type="file">` because by design, file inputs are not
  * assignable programmatically.
  */
@@ -633,7 +701,7 @@ const setInputFieldValue = (
   inputEl: HTMLInputElement,
   value: unknown,
   nthOfName: number,
-  totalOfName: number,
+  elementsWithSameName: HTMLInputElement[],
 ) => {
   switch (inputEl.type.toLowerCase()) {
     case INPUT_TYPE_CHECKBOX:
@@ -651,7 +719,7 @@ const setInputFieldValue = (
         inputEl as HTMLInputNumericElement,
         value,
         nthOfName,
-        totalOfName,
+        elementsWithSameName as HTMLInputNumericElement[],
       );
       return;
     case INPUT_TYPE_DATE:
@@ -661,7 +729,7 @@ const setInputFieldValue = (
         inputEl as HTMLInputDateLikeElement,
         value,
         nthOfName,
-        totalOfName,
+        elementsWithSameName as HTMLInputDateLikeElement[],
       );
       return;
     case INPUT_TYPE_TEXT:
@@ -672,11 +740,12 @@ const setInputFieldValue = (
     case INPUT_TYPE_PASSWORD:
     case INPUT_TYPE_HIDDEN:
     case INPUT_TYPE_COLOR:
+    case INPUT_TYPE_TIME:
     default:
       break;
   }
 
-  if (Array.isArray(value) && totalOfName > 1) {
+  if (Array.isArray(value) && elementsWithSameName.length > 1) {
     // eslint-disable-next-line no-param-reassign
     inputEl.value = value[nthOfName];
     return;
@@ -700,23 +769,24 @@ type HTMLElementWithName
   = (HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement);
 
 /**
- * Gets the value of a field element.
+ * Gets the value of an element regardless if it's a field element or not.
  * @param el - The field element.
  * @param options - The options.
- * @returns Value of the field element.
+ * @returns Value of the element.
  */
-export const getFieldValue = (el: HTMLElement, options = {} as GetFieldValueOptions) => {
+export const getValue = (el: HTMLElement, options = {} as GetFieldValueOptions) => {
   switch (el.tagName) {
     case TAG_NAME_TEXTAREA:
       return getTextAreaFieldValue(el as HTMLTextAreaElement, options);
     case TAG_NAME_SELECT:
       return getSelectFieldValue(el as HTMLSelectElement);
     case TAG_NAME_INPUT:
+      return getInputFieldValue(el as HTMLInputElement, options);
     default:
       break;
   }
 
-  return getInputFieldValue(el as HTMLInputElement, options);
+  return 'value' in el ? el.value : null;
 };
 
 /**
@@ -724,27 +794,42 @@ export const getFieldValue = (el: HTMLElement, options = {} as GetFieldValueOpti
  * @param el - The field element.
  * @param value - Value of the field element.
  * @param nthOfName - What order is this field in with respect to fields of the same name?
- * @param totalOfName - How many fields with the same name are in the form?
+ * @param elementsWithSameName - How many fields with the same name are in the form?
  */
 const setFieldValue = (
   el: HTMLElement,
   value: unknown,
   nthOfName: number,
-  totalOfName: number,
+  elementsWithSameName: HTMLElement[],
 ) => {
   switch (el.tagName) {
     case TAG_NAME_TEXTAREA:
-      setTextAreaFieldValue(el as HTMLTextAreaElement, value, nthOfName, totalOfName);
+      setTextAreaFieldValue(
+        el as HTMLTextAreaElement,
+        value,
+        nthOfName,
+        elementsWithSameName as HTMLTextAreaElement[],
+      );
       return;
     case TAG_NAME_SELECT:
-      setSelectFieldValue(el as HTMLSelectElement, value);
+      setSelectFieldValue(
+        el as HTMLSelectElement,
+        value,
+        nthOfName,
+        elementsWithSameName as HTMLSelectElement[],
+      );
       return;
     case TAG_NAME_INPUT:
     default:
       break;
   }
 
-  setInputFieldValue(el as HTMLInputElement, value, nthOfName, totalOfName);
+  setInputFieldValue(
+    el as HTMLInputElement,
+    value,
+    nthOfName,
+    elementsWithSameName as HTMLInputElement[],
+  );
 };
 
 /**
@@ -758,17 +843,17 @@ const ATTRIBUTE_NAME = 'name' as const;
 const ATTRIBUTE_DISABLED = 'disabled' as const;
 
 /**
- * Determines if an element is a named and enabled form field.
+ * Determines if an element's value is included when its form is submitted.
  * @param el - The element.
- * @returns Value determining if the element is a named and enabled form field.
+ * @returns Value determining if the element's value is included when its form is submitted.
  */
-export const isNamedEnabledFormFieldElement = (el: HTMLElement) => {
+export const isElementValueIncludedInFormSubmit = (el: HTMLElement) => {
   const namedEl = el as unknown as Record<string, unknown>;
   return (
     typeof namedEl[ATTRIBUTE_NAME] === 'string'
     && namedEl[ATTRIBUTE_NAME].length > 0
     && !(ATTRIBUTE_DISABLED in namedEl && Boolean(namedEl[ATTRIBUTE_DISABLED]))
-    && isFormFieldElement(namedEl as unknown as HTMLElement)
+    && isFieldElement(namedEl as unknown as HTMLElement)
   );
 };
 
@@ -829,7 +914,7 @@ const filterFieldElements = (form: HTMLFormElement) => {
     !Number.isNaN(Number(k))
 
     // Only the enabled/read-only elements can be enumerated.
-    && isNamedEnabledFormFieldElement(el)
+    && isElementValueIncludedInFormSubmit(el)
   )) as [string, HTMLElementWithName][];
 };
 
@@ -845,7 +930,7 @@ export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValu
   const fieldElements = filterFieldElements(form);
   const fieldValues = fieldElements.reduce(
     (theFormValues, [, el]) => {
-      const fieldValue = getFieldValue(el, options);
+      const fieldValue = getValue(el, options);
       if (fieldValue === null) {
         return theFormValues;
       }
@@ -853,24 +938,35 @@ export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValu
       const { name: fieldName } = el;
       const { [fieldName]: oldFormValue = null } = theFormValues;
 
-      if (oldFormValue === null) {
-        return {
-          ...theFormValues,
-          [fieldName]: fieldValue,
-        };
-      }
-
-      if (!Array.isArray(oldFormValue)) {
+      if (oldFormValue !== null && !Array.isArray(oldFormValue)) {
         return {
           ...theFormValues,
           [fieldName]: [oldFormValue, fieldValue],
         };
       }
 
+      if (Array.isArray(oldFormValue)) {
+        if (Array.isArray(fieldValue)) {
+          return {
+            ...theFormValues,
+            [fieldName]: [...oldFormValue, ...fieldValue],
+          };
+        }
+        return {
+          ...theFormValues,
+          [fieldName]: [...oldFormValue, fieldValue],
+        };
+      }
+
       return {
         ...theFormValues,
-        [fieldName]: [...oldFormValue, fieldValue],
+        [fieldName]: fieldValue,
       };
+
+      // return {
+      //   ...theFormValues,
+      //   [fieldName]: [...oldFormValue, fieldValue],
+      // };
     },
     {} as Record<string, unknown>,
   );
@@ -928,36 +1024,46 @@ export const setFormValues = (
   const fieldElements = filterFieldElements(form);
   const objectValues = normalizeValues(values);
 
-  const count = fieldElements
+  const elementsWithSameName = fieldElements
     .filter(([, el]) => el.name in objectValues)
     .reduce(
       (currentCount, [, el]) => {
         if (el.tagName === TAG_NAME_INPUT && el.type === INPUT_TYPE_RADIO) {
           return {
             ...currentCount,
-            [el.name]: 1,
+            [el.name]: [el],
           };
         }
 
         return {
           ...currentCount,
           [el.name]: (
-            typeof currentCount[el.name] === 'number'
-              ? currentCount[el.name] + 1
-              : 1
+            Array.isArray(currentCount[el.name])
+              ? [...currentCount[el.name], el]
+              : [el]
           ),
         };
       },
-      {} as Record<string, number>,
+      {} as Record<string, HTMLElement[]>,
     );
 
-  const counter = {} as Record<string, number>;
+  const nthElementOfName = {} as Record<string, number>;
 
   fieldElements
     .filter(([, el]) => el.name in objectValues)
     .forEach(([, el]) => {
-      counter[el.name] = typeof counter[el.name] === 'number' ? counter[el.name] + 1 : 0;
-      setFieldValue(el, objectValues[el.name], counter[el.name], count[el.name]);
+      nthElementOfName[el.name] = (
+        typeof nthElementOfName[el.name] === 'number'
+          ? nthElementOfName[el.name] + 1
+          : 0
+      );
+
+      setFieldValue(
+        el,
+        objectValues[el.name],
+        nthElementOfName[el.name],
+        elementsWithSameName[el.name],
+      );
     });
 };
 

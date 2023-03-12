@@ -55,7 +55,7 @@ describe('checkbox', () => {
 				}
 			});
 		});
-	})
+	});
 
 	describe('checked', () => {
 		beforeEach(utils.setup(`
@@ -92,7 +92,6 @@ describe('checkbox', () => {
 			});
 		});
 	});
-
 
 	describe('duplicate', () => {
 		beforeEach(utils.setup(`
@@ -162,6 +161,223 @@ describe('checkbox', () => {
 				expectedStaticValue: {
 					enabled: ['hello 3', 'hello 4'],
 				},
+			});
+		});
+	});
+
+	describe('setting values', () => {
+		beforeEach(utils.setup(`
+			<!DOCTYPE html>
+			<html lang="en-PH">
+				<head>
+					<meta charset="UTF-8">
+					<title>Checkbox/Setting Values</title>
+				</head>
+				<body>
+					<form>
+						<label>
+							<span>Hello</span>
+							<input type="checkbox" name="enabled" />
+						</label>
+						<button type="submit">Submit</button>
+					</form>
+				</body>
+			</html>
+		`))
+
+		it('should check for boolean "true"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: true, })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('on');
+				},
+				expectedStaticValue: 'enabled=on',
+			});
+		});
+
+		it('should check for string "true"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 'true', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('on');
+				},
+				expectedStaticValue: 'enabled=on',
+			});
+		});
+
+		it('should check for string "yes"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 'yes', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('on');
+				},
+				expectedStaticValue: 'enabled=on',
+			});
+		});
+
+		it('should check for string "on"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 'on', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('on');
+				},
+				expectedStaticValue: 'enabled=on',
+			});
+		});
+
+		it('should uncheck for boolean "false"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: false, })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
+			});
+		});
+
+		it('should uncheck for string "false"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 'false', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
+			});
+		});
+
+		it('should uncheck for string "no"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 'no', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
+			});
+		});
+
+		it('should uncheck for string "off"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 'off', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
+			});
+		});
+
+		it('should check for number "1"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 1, })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('on');
+				},
+				expectedStaticValue: 'enabled=on',
+			});
+		});
+
+		it('should check for string "1"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: '1', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('on');
+				},
+				expectedStaticValue: 'enabled=on',
+			});
+		});
+
+		it('should uncheck for number "0"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 0, })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
+			});
+		});
+
+		it('should uncheck for string "0"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: '0', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
+			});
+		});
+
+		it('should uncheck for object "null"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: null, })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
+			});
+		});
+
+		it('should uncheck for string "null"', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: 'null', })
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).not.toBe('on');
+				},
+				expectedStaticValue: '',
 			});
 		});
 	});

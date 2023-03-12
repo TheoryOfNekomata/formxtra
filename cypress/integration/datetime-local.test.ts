@@ -38,6 +38,19 @@ describe('date', () => {
 				},
 			});
 		});
+
+		it('should enable Date representation', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter, forceDateValues: true });
+					// somehow, checking instanceof Date fails here, because we're using an artificial date
+					// object?
+					const testDate = new Date(values.hello as Date);
+					expect((values.hello as Date).getTime()).toBe(testDate.getTime());
+				},
+			});
+		});
 	})
 
 	describe('disabled', () => {
