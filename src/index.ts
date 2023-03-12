@@ -142,7 +142,7 @@ const setSelectFieldValue = (
     const valueArray = value as unknown[];
     const valueArrayDepth = valueArray.every((v) => Array.isArray(v)) ? 2 : 1;
     if (valueArrayDepth > 1) {
-      // We check if values are [['foo', 'bar], ['baz', 'quux'], 'single value]
+      // We check if values are [['foo', 'bar'], ['baz', 'quick'], 'single value]
       // If this happens, all values must correspond to a <select multiple> element.
       const currentValue = valueArray[nthOfName] as string[];
       Array.from(selectEl.options).forEach((el) => {
@@ -529,7 +529,7 @@ type GetInputDateFieldValueOptions = {
 };
 
 /**
- * Gets the value of an `<input type="date">` element.
+ * Gets the value of an `<input>` element for date-like data.
  * @param inputEl - The element.
  * @param options - The options.
  * @returns Value of the input element.
@@ -559,7 +559,7 @@ const DATE_FORMAT_ISO_DATE = 'yyyy-MM-DD' as const;
 const DATE_FORMAT_ISO_MONTH = 'yyyy-MM' as const;
 
 /**
- * Sets the value of an `<input type="date">` element.
+ * Sets the value of an `<input>` element for date-like data.
  * @param inputEl - The element.
  * @param value - Value of the input element.
  * @param nthOfName - What order is this field in with respect to fields of the same name?
@@ -619,9 +619,102 @@ type GetInputFieldValueOptions
 const INPUT_TYPE_TEXT = 'text' as const;
 
 /**
+ * Type for an `<input type="text">` element.
+ */
+export type HTMLInputTextElement = HTMLInputElement & { type: typeof INPUT_TYPE_TEXT };
+
+/**
  * Value of the `type` attribute for `<input>` elements considered as search fields.
  */
 const INPUT_TYPE_SEARCH = 'search' as const;
+
+/**
+ * Type for an `<input type="search">` element.
+ */
+export type HTMLInputSearchElement = HTMLInputElement & { type: typeof INPUT_TYPE_SEARCH };
+
+/**
+ * Type for an `<input>` element that handles textual data.
+ */
+export type HTMLInputTextualElement
+  = HTMLInputTextElement
+  | HTMLInputSearchElement
+
+/**
+ * Gets the value of an `<input>` element for textual data.
+ * @param inputEl - The element.
+ * @returns Value of the input element.
+ */
+const getInputTextualFieldValue = (
+  inputEl: HTMLInputTextualElement,
+) => {
+  if (inputEl.dirName) {
+    return [inputEl.value, { [inputEl.dirName]: window.getComputedStyle(inputEl).direction }];
+  }
+
+  return inputEl.value;
+};
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as hidden fields.
+ */
+const INPUT_TYPE_HIDDEN = 'hidden' as const;
+
+/**
+ * Attribute value for the `name` attribute for `<input type="hidden">` elements, which should
+ * contain character set encoding.
+ */
+const NAME_ATTRIBUTE_VALUE_CHARSET = '_charset_' as const;
+
+/**
+ * Type for an `<input type="hidden">` element.
+ */
+export type HTMLInputHiddenElement = HTMLInputElement & { type: typeof INPUT_TYPE_HIDDEN }
+
+/**
+ * Gets the value of an `<input>` element for hidden data.
+ * @param inputEl - The element.
+ * @returns Value of the input element.
+ */
+const getInputHiddenFieldValue = (
+  inputEl: HTMLInputHiddenElement,
+) => {
+  if (
+    inputEl.name === NAME_ATTRIBUTE_VALUE_CHARSET
+    && inputEl.getAttribute(ATTRIBUTE_VALUE) === null
+  ) {
+    return window.document.characterSet;
+  }
+
+  return inputEl.value;
+};
+
+/**
+ * Sets the value of an `<input type="hidden">` element.
+ * @param inputEl - The element.
+ * @param value - Value of the input element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param elementsWithSameName - How many fields with the same name are in the form?
+ */
+const setInputHiddenFieldValue = (
+  inputEl: HTMLInputHiddenElement,
+  value: unknown,
+  nthOfName: number,
+  elementsWithSameName: HTMLInputHiddenElement[],
+) => {
+  if (inputEl.name === NAME_ATTRIBUTE_VALUE_CHARSET) {
+    return;
+  }
+
+  if (Array.isArray(value) && elementsWithSameName.length > 1) {
+    // eslint-disable-next-line no-param-reassign
+    inputEl.value = value[nthOfName];
+    return;
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  inputEl.value = value as string;
+};
 
 /**
  * Value of the `type` attribute for `<input>` elements considered as email fields.
@@ -642,11 +735,6 @@ const INPUT_TYPE_URL = 'url' as const;
  * Value of the `type` attribute for `<input>` elements considered as password fields.
  */
 const INPUT_TYPE_PASSWORD = 'password' as const;
-
-/**
- * Value of the `type` attribute for `<input>` elements considered as hidden fields.
- */
-const INPUT_TYPE_HIDDEN = 'hidden' as const;
 
 /**
  * Value of the `type` attribute for `<input>` elements considered as color pickers.
@@ -684,11 +772,13 @@ const getInputFieldValue = (
       return getInputDateLikeFieldValue(inputEl as HTMLInputDateLikeElement, options);
     case INPUT_TYPE_TEXT:
     case INPUT_TYPE_SEARCH:
+      return getInputTextualFieldValue(inputEl as HTMLInputTextualElement);
+    case INPUT_TYPE_HIDDEN:
+      return getInputHiddenFieldValue(inputEl as HTMLInputHiddenElement);
     case INPUT_TYPE_EMAIL:
     case INPUT_TYPE_TEL:
     case INPUT_TYPE_URL:
     case INPUT_TYPE_PASSWORD:
-    case INPUT_TYPE_HIDDEN:
     case INPUT_TYPE_COLOR:
     case INPUT_TYPE_TIME:
     default:
@@ -766,13 +856,20 @@ const setInputFieldValue = (
         elementsWithSameName as HTMLInputDateLikeElement[],
       );
       return;
+    case INPUT_TYPE_HIDDEN:
+      setInputHiddenFieldValue(
+        inputEl as HTMLInputHiddenElement,
+        value,
+        nthOfName,
+        elementsWithSameName as HTMLInputHiddenElement[],
+      );
+      return;
     case INPUT_TYPE_TEXT:
     case INPUT_TYPE_SEARCH:
     case INPUT_TYPE_EMAIL:
     case INPUT_TYPE_TEL:
     case INPUT_TYPE_URL:
     case INPUT_TYPE_PASSWORD:
-    case INPUT_TYPE_HIDDEN:
     case INPUT_TYPE_COLOR:
     case INPUT_TYPE_TIME:
     default:
@@ -870,6 +967,11 @@ const ATTRIBUTE_NAME = 'name' as const;
 const ATTRIBUTE_DISABLED = 'disabled' as const;
 
 /**
+ * Value for the name attribute of the reserved name `isindex`.
+ */
+const NAME_ATTRIBUTE_VALUE_ISINDEX = 'isindex' as const;
+
+/**
  * Determines if an element's value is included when its form is submitted.
  * @param el - The element.
  * @returns Value determining if the element's value is included when its form is submitted.
@@ -879,6 +981,7 @@ export const isElementValueIncludedInFormSubmit = (el: HTMLElement) => {
   return (
     typeof namedEl[ATTRIBUTE_NAME] === 'string'
     && namedEl[ATTRIBUTE_NAME].length > 0
+    && namedEl[ATTRIBUTE_NAME] !== NAME_ATTRIBUTE_VALUE_ISINDEX
     && !(ATTRIBUTE_DISABLED in namedEl && Boolean(namedEl[ATTRIBUTE_DISABLED]))
     && isFieldElement(namedEl as unknown as HTMLElement)
   );
