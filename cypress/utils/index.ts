@@ -13,7 +13,7 @@ type TestFn = (form: HTMLFormElement, submitter: HTMLSubmitterElement, after: Ex
 export const setup = (template: string) => {
 	if (typeof cy !== 'undefined') {
 		return () => {
-			cy.intercept({ url: '/' }, { body: template });
+			cy.intercept({ url: '/' }, { body: template }).as('loaded');
 			cy.intercept({ url: '/?*' }, { body: template }).as('submitted');
 		}
 	}
@@ -26,18 +26,18 @@ export const setup = (template: string) => {
 }
 
 type TestOptions = {
-	action: RetrieveSubmitterFn,
-	test: TestFn,
+	actionBeforeSubmit: RetrieveSubmitterFn,
+	onSubmitted: TestFn,
 	expectedStaticValue?: ExpectedSearchValue,
-	preAction?: Function,
+	onLoaded?: Function,
 }
 
 export const test = (options: TestOptions) => {
 	const {
-		action: retrieveSubmitterFn,
-		test: testFn,
+		actionBeforeSubmit: retrieveSubmitterFn,
+		onSubmitted: testFn,
 		expectedStaticValue,
-		preAction,
+		onLoaded,
 	} = options;
 	let form: HTMLFormElement
 	let submitter: HTMLButtonElement | HTMLInputElement
@@ -49,8 +49,8 @@ export const test = (options: TestOptions) => {
 			.then((formResult: any) => {
 				[form] = Array.from(formResult);
 
-				if (typeof preAction === 'function') {
-					preAction(form);
+				if (typeof onLoaded === 'function') {
+					onLoaded(form);
 				}
 			})
 
@@ -65,13 +65,17 @@ export const test = (options: TestOptions) => {
 				.wait('@submitted')
 				.location('search')
 				.then((search: any) => {
-					testFn(form, submitter, search)
+					setTimeout(() => {
+						testFn(form, submitter, search)
+					}, 0)
 				})
 		} else {
 			cy
 				.location('search')
 				.then((search: any) => {
-					testFn(form, submitter, search)
+					setTimeout(() => {
+						testFn(form, submitter, search)
+					}, 0);
 				})
 		}
 	} else {
@@ -80,8 +84,8 @@ export const test = (options: TestOptions) => {
 				[submitter] = Array.from(submitterQueryEl as any[]);
 				[form] = Array.from(window.document.getElementsByTagName('form'))
 
-				if (typeof preAction === 'function') {
-					preAction(form);
+				if (typeof onLoaded === 'function') {
+					onLoaded(form);
 				}
 
 				testFn(form, submitter, expectedStaticValue)

@@ -29,8 +29,8 @@ describe('select', () => {
 
 		it('should have multiple form values on a single field', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -44,11 +44,11 @@ describe('select', () => {
 
 		it('should set values correctly', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: ['Foo', 'Baz'] });
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -94,8 +94,8 @@ describe('select', () => {
 
 		it('should have multiple form values on a single field', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -109,11 +109,11 @@ describe('select', () => {
 
 		it('should set multiple form values across all selects', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: ['Foo', 'Baz', 'Chocolate', 'Vanilla'] })
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -127,11 +127,11 @@ describe('select', () => {
 
 		it('should set multiple form values on each corresponding select element', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: [['Foo', 'Baz', 'Chocolate'], ['Vanilla']] })
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -170,8 +170,8 @@ describe('select', () => {
 
 		it('should have single form value on a single field', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -220,8 +220,8 @@ describe('select', () => {
 
 		it('should have multiple form values on a single field', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -235,11 +235,11 @@ describe('select', () => {
 
 		it('should set multiple form values across all selects', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: ['Foo', 'Chocolate'] })
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -253,11 +253,11 @@ describe('select', () => {
 
 		it('should set multiple form values on each corresponding select element', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: ['Foo', 'Ube'] })
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)

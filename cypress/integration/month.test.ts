@@ -24,8 +24,8 @@ describe('month', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -41,8 +41,8 @@ describe('month', () => {
 
 		it('should enable Date representation', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter, forceDateValues: true });
 					// somehow, checking instanceof Date fails here, because we're using an artificial date
 					// object?
@@ -78,8 +78,8 @@ describe('month', () => {
 
 		it('should have blank form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -114,8 +114,8 @@ describe('month', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -155,8 +155,8 @@ describe('month', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -193,11 +193,11 @@ describe('month', () => {
 
 		it('should have form values set', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				preAction: (form: HTMLFormElement) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: '2003-05', })
 				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -238,8 +238,8 @@ describe('month', () => {
 
 		it('should get both values', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -255,13 +255,13 @@ describe('month', () => {
 
 		it('should set both values', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, {
 						hello: ['2003-04', '2003-02'],
 					})
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)

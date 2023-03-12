@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('checkbox', () => {
+describe('radio', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Checkbox/Basic</title>
+					<title>Radio/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="checkbox" name="enabled" />
+							<input type="radio" name="enabled" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -39,22 +39,6 @@ describe('checkbox', () => {
 				expectedStaticValue: '',
 			});
 		});
-
-		it('should have false checked value', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					const values = getFormValues(form,
-						{
-							submitter,
-							booleanValuelessCheckbox: true
-						}
-					)
-					expect(values['enabled'])
-						.toBe(false);
-				}
-			});
-		});
 	});
 
 	describe('checked', () => {
@@ -63,13 +47,13 @@ describe('checkbox', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Checkbox/Checked</title>
+					<title>Radio/Checked</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="checkbox" name="enabled" checked />
+							<input type="radio" name="enabled" checked />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -99,25 +83,25 @@ describe('checkbox', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Checkbox/Duplicate</title>
+					<title>Radio/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input type="checkbox" name="enabled" value="hello 1" checked />
+							<input type="radio" name="enabled" value="hello 1" checked />
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input type="checkbox" name="enabled" value="hello 2" checked />
+							<input type="radio" name="enabled" value="hello 2" checked />
 						</label>
 						<label>
 							<span>Hello 3</span>
-							<input type="checkbox" name="enabled" value="hello 3" />
+							<input type="radio" name="enabled" value="hello 3" />
 						</label>
 						<label>
 							<span>Hello 4</span>
-							<input type="checkbox" name="enabled" value="hello 4" />
+							<input type="radio" name="enabled" value="hello 4" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -125,7 +109,7 @@ describe('checkbox', () => {
 			</html>
 		`));
 
-		it('should get both values', () => {
+		it('should get last value as checked', () => {
 			utils.test({
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
@@ -137,12 +121,12 @@ describe('checkbox', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					enabled: ['hello 1', 'hello 2'],
+					enabled: 'hello 2',
 				},
 			});
 		});
 
-		it('should set both values', () => {
+		it('should set to last value', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, {
@@ -159,7 +143,7 @@ describe('checkbox', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					enabled: ['hello 3', 'hello 4'],
+					enabled: 'hello 4',
 				},
 			});
 		});
@@ -171,13 +155,22 @@ describe('checkbox', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Checkbox/Setting Values</title>
+					<title>Radio/Setting Values</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="checkbox" name="enabled" />
+							<input type="radio" name="enabled" value="default" checked />
+							<input type="radio" name="enabled" />
+							<input type="radio" name="enabled" value="true" />
+							<input type="radio" name="enabled" value="yes" />
+							<input type="radio" name="enabled" value="1" />
+							<input type="radio" name="enabled" value="false" />
+							<input type="radio" name="enabled" value="no" />
+							<input type="radio" name="enabled" value="off" />
+							<input type="radio" name="enabled" value="0" />
+							<input type="radio" name="enabled" value="null" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -185,7 +178,7 @@ describe('checkbox', () => {
 			</html>
 		`))
 
-		it('should check for boolean "true"', () => {
+		it('should uncheck for boolean "true"', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: true, })
@@ -193,9 +186,9 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBe('on');
+					expect(values['enabled']).toBeUndefined()
 				},
-				expectedStaticValue: 'enabled=on',
+				expectedStaticValue: '',
 			});
 		});
 
@@ -207,9 +200,9 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBe('on');
+					expect(values['enabled']).toBe('true');
 				},
-				expectedStaticValue: 'enabled=on',
+				expectedStaticValue: 'enabled=true',
 			});
 		});
 
@@ -221,9 +214,9 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBe('on');
+					expect(values['enabled']).toBe('yes');
 				},
-				expectedStaticValue: 'enabled=on',
+				expectedStaticValue: 'enabled=yes',
 			});
 		});
 
@@ -255,7 +248,7 @@ describe('checkbox', () => {
 			});
 		});
 
-		it('should uncheck for string "false"', () => {
+		it('should check for string "false"', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'false', })
@@ -263,13 +256,13 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBeUndefined()
+					expect(values['enabled']).toBe('false');
 				},
-				expectedStaticValue: '',
+				expectedStaticValue: 'enabled=false',
 			});
 		});
 
-		it('should uncheck for string "no"', () => {
+		it('should check for string "no"', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'no', })
@@ -277,13 +270,13 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBeUndefined()
+					expect(values['enabled']).toBe('no')
 				},
-				expectedStaticValue: '',
+				expectedStaticValue: 'enabled=no',
 			});
 		});
 
-		it('should uncheck for string "off"', () => {
+		it('should check for string "off"', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'off', })
@@ -291,13 +284,13 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBeUndefined()
+					expect(values['enabled']).toBe('off');
 				},
-				expectedStaticValue: '',
+				expectedStaticValue: 'enabled=off',
 			});
 		});
 
-		it('should check for number "1"', () => {
+		it('should uncheck for number "1"', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 1, })
@@ -305,9 +298,9 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBe('on');
+					expect(values['enabled']).toBeUndefined();
 				},
-				expectedStaticValue: 'enabled=on',
+				expectedStaticValue: '',
 			});
 		});
 
@@ -319,9 +312,9 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBe('on');
+					expect(values['enabled']).toBe('1');
 				},
-				expectedStaticValue: 'enabled=on',
+				expectedStaticValue: 'enabled=1',
 			});
 		});
 
@@ -339,7 +332,7 @@ describe('checkbox', () => {
 			});
 		});
 
-		it('should uncheck for string "0"', () => {
+		it('should check for string "0"', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: '0', })
@@ -347,9 +340,9 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
-					expect(values['enabled']).toBeUndefined()
+					expect(values['enabled']).toBe('0')
 				},
-				expectedStaticValue: '',
+				expectedStaticValue: 'enabled=0',
 			});
 		});
 
@@ -367,7 +360,7 @@ describe('checkbox', () => {
 			});
 		});
 
-		it('should uncheck for string "null"', () => {
+		it('should check for string "null"', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'null', })
@@ -375,9 +368,51 @@ describe('checkbox', () => {
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('null');
+				},
+				expectedStaticValue: 'null',
+			});
+		});
+
+		it('should check for boolean "true"', () => {
+			utils.test({
+				onLoaded: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: true, })
+				},
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
 				},
 				expectedStaticValue: '',
+			});
+		});
+
+		it('should check valueless radio for last value on', () => {
+			utils.test({
+				onLoaded: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: ['foo', 'bar', 'baz', 'on'], })
+				},
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('on')
+				},
+				expectedStaticValue: 'enabled=on',
+			});
+		});
+
+		it('should check radio with value for last value', () => {
+			utils.test({
+				onLoaded: (form: HTMLFormElement) => {
+					setFormValues(form, { enabled: ['foo', 'bar', 'baz', 'on', 'default', 'true'], })
+				},
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					const values = getFormValues(form, { submitter })
+					expect(values['enabled']).toBe('true')
+				},
+				expectedStaticValue: 'enabled=true',
 			});
 		});
 	});

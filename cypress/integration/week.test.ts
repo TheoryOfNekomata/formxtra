@@ -24,8 +24,8 @@ describe('week', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -65,8 +65,8 @@ describe('week', () => {
 
 		it('should have blank form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -101,8 +101,8 @@ describe('week', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -142,8 +142,8 @@ describe('week', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -180,11 +180,11 @@ describe('week', () => {
 
 		it('should have form values set', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				preAction: (form: HTMLFormElement) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: '2003-W25', })
 				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -225,8 +225,8 @@ describe('week', () => {
 
 		it('should get both values', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -242,13 +242,13 @@ describe('week', () => {
 
 		it('should set both values', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, {
 						hello: ['2003-W40', '2003-W50'],
 					})
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)

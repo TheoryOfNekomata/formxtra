@@ -216,8 +216,19 @@ const setInputRadioFieldValue = (
   value: unknown,
 ) => {
   const valueWhenChecked = inputEl.getAttribute(ATTRIBUTE_VALUE);
+
+  if (valueWhenChecked !== null) {
+    // eslint-disable-next-line no-param-reassign
+    inputEl.checked = (
+      Array.isArray(value) ? valueWhenChecked === value.slice(-1)[0] : valueWhenChecked === value
+    );
+    return;
+  }
+
   // eslint-disable-next-line no-param-reassign
-  inputEl.checked = valueWhenChecked === value;
+  inputEl.checked = (
+    Array.isArray(value) ? value.includes('on') : value === 'on'
+  );
 };
 
 /**

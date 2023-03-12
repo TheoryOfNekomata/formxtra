@@ -24,8 +24,8 @@ describe('textarea', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -65,8 +65,8 @@ describe('textarea', () => {
 
 		it('should have blank form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -101,8 +101,8 @@ describe('textarea', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -142,8 +142,8 @@ describe('textarea', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -180,11 +180,11 @@ describe('textarea', () => {
 
 		it('should have form values set', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				preAction: (form: HTMLFormElement) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: 'Hi', })
 				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -221,12 +221,12 @@ describe('textarea', () => {
 
 		it('should read LF line breaks', () => {
 			utils.test({
-				action: (cy: any) => {
+				actionBeforeSubmit: (cy: any) => {
 					cy.get('[name="hello"]')
 						.type('Hi\nHello', { parseSpecialCharSequences: false })
 					return cy.get('[type="submit"]')
 				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter, lineEndings: LineEnding.LF }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -242,12 +242,12 @@ describe('textarea', () => {
 
 		it('should read CR line breaks', () => {
 			utils.test({
-				action: (cy: any) => {
+				actionBeforeSubmit: (cy: any) => {
 					cy.get('[name="hello"]')
 						.type('Hi\rHello', { parseSpecialCharSequences: false })
 					return cy.get('[type="submit"]')
 				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter, lineEndings: LineEnding.CR }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -263,12 +263,12 @@ describe('textarea', () => {
 
 		it('should read CRLF line breaks', () => {
 			utils.test({
-				action: (cy: any) => {
+				actionBeforeSubmit: (cy: any) => {
 					cy.get('[name="hello"]')
 						.type('Hi\r\nHello', { parseSpecialCharSequences: false })
 					return cy.get('[type="submit"]')
 				},
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter, lineEndings: LineEnding.CRLF }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -309,8 +309,8 @@ describe('textarea', () => {
 
 		it('should get both values', () => {
 			utils.test({
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
@@ -326,13 +326,13 @@ describe('textarea', () => {
 
 		it('should set both values', () => {
 			utils.test({
-				preAction: (form: HTMLFormElement) => {
+				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, {
 						hello: ['new value 1', 'another value 2'],
 					})
 				},
-				action: (cy: any) => cy.get('[type="submit"]'),
-				test: (form: HTMLFormElement, submitter: any, search: any) => {
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
 					const after = utils.makeSearchParams(search)
