@@ -60,7 +60,7 @@
     "dev": "pridepack dev",
     "test:jsdom": "vitest",
     "test:cypress": "cypress run",
-    "test:cpanel": "cypress open"
+    "cypress:cpanel": "cypress open"
   },
   "private": false,
   "description": "Extract and set form values through the DOM.",

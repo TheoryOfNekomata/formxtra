@@ -123,7 +123,7 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Readonly</title>
+					<title>Datetime-Local/Readonly</title>
 				</head>
 				<body>
 					<form>
@@ -164,7 +164,7 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>Datetime-Local/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>

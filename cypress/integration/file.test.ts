@@ -1,4 +1,4 @@
-import { getFormValues } from '../../src'
+import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
 describe('file', () => {
@@ -83,6 +83,26 @@ describe('file', () => {
 				},
 			});
 		})
+
+		it('should do nothing when attempting to set the value of the file', () => {
+			utils.test({
+				preAction: (form: HTMLFormElement) => {
+					setFormValues(form, { hello: 'data.json' });
+				},
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any) => {
+					const formValues = getFormValues(
+						form,
+						{
+							submitter,
+							getFileObjects: true
+						}
+					)
+					expect(formValues.hello).toBeDefined()
+				},
+				expectedStaticValue: {},
+			});
+		});
 	})
 
 	describe('multiple', () => {

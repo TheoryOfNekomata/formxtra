@@ -17,11 +17,6 @@ export enum LineEnding {
 }
 
 /**
- * Type for a placeholder object value.
- */
-type PlaceholderObject = Record<string, unknown>
-
-/**
  * Tag name for the `<input>` element.
  */
 const TAG_NAME_INPUT = 'INPUT' as const;
@@ -96,35 +91,35 @@ const getTextAreaFieldValue = (
  * Sets the value of a `<textarea>` element.
  * @param textareaEl - The element.
  * @param value - Value of the textarea element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param totalOfName - How many fields with the same name are in the form?
  */
 const setTextAreaFieldValue = (
   textareaEl: HTMLTextAreaElement,
   value: unknown,
+  nthOfName: number,
+  totalOfName: number,
 ) => {
+  if (Array.isArray(value) && totalOfName > 1) {
+    // eslint-disable-next-line no-param-reassign
+    textareaEl.value = value[nthOfName];
+    return;
+  }
+
   // eslint-disable-next-line no-param-reassign
   textareaEl.value = value as string;
 };
 
 /**
- * Options for getting a `<select>` element field value.
- */
-type GetSelectValueOptions = PlaceholderObject
-
-/**
  * Gets the value of a `<select>` element.
  * @param selectEl - The element.
- * @param options - The options.
  * @returns Value of the select element.
  */
 const getSelectFieldValue = (
   selectEl: HTMLSelectElement,
-  options = {} as GetSelectValueOptions,
 ) => {
   if (selectEl.multiple) {
     return Array.from(selectEl.options).filter((o) => o.selected).map((o) => o.value);
-  }
-  if (typeof options !== 'object' || options === null) {
-    throw new TypeError('Invalid options for getSelectFieldValue().');
   }
   return selectEl.value;
 };
@@ -164,25 +159,13 @@ const INPUT_TYPE_RADIO = 'radio' as const;
 export type HTMLInputRadioElement = HTMLInputElement & { type: typeof INPUT_TYPE_RADIO }
 
 /**
- * Options for getting an `<input type="radio">` element field value.
- */
-type GetInputRadioFieldValueOptions = PlaceholderObject
-
-/**
  * Gets the value of an `<input type="radio">` element.
  * @param inputEl - The element.
- * @param options - The options.
  * @returns Value of the input element.
  */
-const getInputRadioFieldValue = (
-  inputEl: HTMLInputRadioElement,
-  options = {} as GetInputRadioFieldValueOptions,
-) => {
+const getInputRadioFieldValue = (inputEl: HTMLInputRadioElement) => {
   if (inputEl.checked) {
     return inputEl.value;
-  }
-  if (typeof options !== 'object' || options === null) {
-    throw new TypeError('Invalid options for getInputRadioFieldValue().');
   }
   return null;
 };
@@ -411,13 +394,18 @@ const getInputNumericFieldValue = (
  * Sets the value of an `<input type="number">` element.
  * @param inputEl - The element.
  * @param value - Value of the input element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param totalOfName - How many fields with the same name are in the form?
  */
 const setInputNumericFieldValue = (
   inputEl: HTMLInputNumericElement,
   value: unknown,
+  nthOfName: number,
+  totalOfName: number,
 ) => {
+  const valueArray = Array.isArray(value) ? value : [value];
   // eslint-disable-next-line no-param-reassign
-  inputEl.valueAsNumber = Number(value);
+  inputEl.valueAsNumber = Number(valueArray[totalOfName > 1 ? nthOfName : 0]);
 };
 
 /**
@@ -520,9 +508,38 @@ const setInputDateLikeFieldValue = (
 type GetInputFieldValueOptions
   = GetInputCheckboxFieldValueOptions
   & GetInputFileFieldValueOptions
-  & GetInputRadioFieldValueOptions
   & GetInputNumberFieldValueOptions
   & GetInputDateFieldValueOptions
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as text fields.
+ */
+const INPUT_TYPE_TEXT = 'text' as const;
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as email fields.
+ */
+const INPUT_TYPE_EMAIL = 'email' as const;
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as telephone fields.
+ */
+const INPUT_TYPE_TEL = 'tel' as const;
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as password fields.
+ */
+const INPUT_TYPE_PASSWORD = 'password' as const;
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as hidden fields.
+ */
+const INPUT_TYPE_HIDDEN = 'hidden' as const;
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as color pickers.
+ */
+const INPUT_TYPE_COLOR = 'color' as const;
 
 /**
  * Gets the value of an `<input>` element.
@@ -538,7 +555,7 @@ const getInputFieldValue = (
     case INPUT_TYPE_CHECKBOX:
       return getInputCheckboxFieldValue(inputEl as HTMLInputCheckboxElement, options);
     case INPUT_TYPE_RADIO:
-      return getInputRadioFieldValue(inputEl as HTMLInputRadioElement, options);
+      return getInputRadioFieldValue(inputEl as HTMLInputRadioElement);
     case INPUT_TYPE_FILE:
       return getInputFileFieldValue(inputEl as HTMLInputFileElement, options);
     case INPUT_TYPE_NUMBER:
@@ -547,10 +564,18 @@ const getInputFieldValue = (
     case INPUT_TYPE_DATE:
     case INPUT_TYPE_DATETIME_LOCAL:
       return getInputDateLikeFieldValue(inputEl as HTMLInputDateLikeElement, options);
+    case INPUT_TYPE_TEXT:
+    case INPUT_TYPE_EMAIL:
+    case INPUT_TYPE_TEL:
+    case INPUT_TYPE_PASSWORD:
+    case INPUT_TYPE_HIDDEN:
+    case INPUT_TYPE_COLOR:
     default:
       break;
   }
-  return inputEl.value;
+
+  // force return `null` for custom elements supporting setting values.
+  return inputEl.value ?? null;
 };
 
 /**
@@ -580,7 +605,12 @@ const setInputFieldValue = (
       return;
     case INPUT_TYPE_NUMBER:
     case INPUT_TYPE_RANGE:
-      setInputNumericFieldValue(inputEl as HTMLInputNumericElement, value);
+      setInputNumericFieldValue(
+        inputEl as HTMLInputNumericElement,
+        value,
+        nthOfName,
+        totalOfName,
+      );
       return;
     case INPUT_TYPE_DATE:
     case INPUT_TYPE_DATETIME_LOCAL:
@@ -591,6 +621,12 @@ const setInputFieldValue = (
         totalOfName,
       );
       return;
+    case INPUT_TYPE_TEXT:
+    case INPUT_TYPE_EMAIL:
+    case INPUT_TYPE_TEL:
+    case INPUT_TYPE_PASSWORD:
+    case INPUT_TYPE_HIDDEN:
+    case INPUT_TYPE_COLOR:
     default:
       break;
   }
@@ -610,7 +646,6 @@ const setInputFieldValue = (
  */
 type GetFieldValueOptions
   = GetTextAreaValueOptions
-  & GetSelectValueOptions
   & GetInputFieldValueOptions
 
 /**
@@ -630,15 +665,13 @@ export const getFieldValue = (el: HTMLElement, options = {} as GetFieldValueOpti
     case TAG_NAME_TEXTAREA:
       return getTextAreaFieldValue(el as HTMLTextAreaElement, options);
     case TAG_NAME_SELECT:
-      return getSelectFieldValue(el as HTMLSelectElement, options);
+      return getSelectFieldValue(el as HTMLSelectElement);
     case TAG_NAME_INPUT:
-      return getInputFieldValue(el as HTMLInputElement, options);
     default:
       break;
   }
 
-  const fieldEl = el as HTMLElement & { value?: unknown };
-  return fieldEl.value || null;
+  return getInputFieldValue(el as HTMLInputElement, options);
 };
 
 /**
@@ -656,20 +689,17 @@ const setFieldValue = (
 ) => {
   switch (el.tagName) {
     case TAG_NAME_TEXTAREA:
-      setTextAreaFieldValue(el as HTMLTextAreaElement, value);
+      setTextAreaFieldValue(el as HTMLTextAreaElement, value, nthOfName, totalOfName);
       return;
     case TAG_NAME_SELECT:
       setSelectFieldValue(el as HTMLSelectElement, value);
       return;
     case TAG_NAME_INPUT:
-      setInputFieldValue(el as HTMLInputElement, value, nthOfName, totalOfName);
-      return;
     default:
       break;
   }
 
-  const fieldEl = el as HTMLElement & { value?: unknown };
-  fieldEl.value = value;
+  setInputFieldValue(el as HTMLInputElement, value, nthOfName, totalOfName);
 };
 
 /**

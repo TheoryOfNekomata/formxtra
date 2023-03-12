@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('date', () => {
+describe('month', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Basic</title>
+					<title>Month/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="date" name="hello" value="2003-04-06" />
+							<input type="month" name="hello" value="2003-05" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -34,7 +34,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-04-06',
+					hello: '2003-05',
 				},
 			});
 		});
@@ -46,14 +46,14 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Disabled</title>
+					<title>Month/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="date" name="hello" value="2003-06-09"
+								type="month" name="hello" value="2003-05"
 								disabled
 							/>
 						</label>
@@ -85,7 +85,7 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Outside</title>
+					<title>Month/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -93,7 +93,7 @@ describe('date', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="date" name="hello" value="2003-04-20" form="form" />
+						<input type="month" name="hello" value="2003-05" form="form" />
 					</label>
 				</body>
 			</html>
@@ -111,7 +111,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-04-20',
+					hello: '2003-05',
 				},
 			});
 		});
@@ -123,14 +123,14 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Readonly</title>
+					<title>Text/Readonly</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="2003-11-11"
+								type="text" name="hello" value="2003-05"
 								readonly
 							/>
 						</label>
@@ -152,7 +152,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-11-11',
+					hello: '2003-05',
 				},
 			});
 		});
@@ -164,13 +164,13 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Programmatic Value Setting</title>
+					<title>Month/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="date" name="hello" />
+							<input type="month" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -182,7 +182,7 @@ describe('date', () => {
 			utils.test({
 				action: (cy: any) => cy.get('[type="submit"]'),
 				preAction: (form: HTMLFormElement) => {
-					setFormValues(form, { hello: new Date('2000-01-01'), })
+					setFormValues(form, { hello: '2003-05', })
 				},
 				test: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
@@ -193,7 +193,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2000-01-01',
+					hello: '2003-05',
 				},
 			});
 		});
@@ -205,17 +205,17 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Duplicate</title>
+					<title>Month/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="date" name="hello" value="2007-07-07"/>
+							<input id="hello1" type="month" name="hello" value="2003-05"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="date" name="hello" value="2008-08-08"/>
+							<input id="hello2" type="month" name="hello" value="2003-06"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -235,7 +235,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['2007-07-07', '2008-08-08'],
+					hello: ['2003-05', '2003-06'],
 				},
 			});
 		});
@@ -244,7 +244,7 @@ describe('date', () => {
 			utils.test({
 				preAction: (form: HTMLFormElement) => {
 					setFormValues(form, {
-						hello: ['2006-06-06', '2005-05-05'],
+						hello: ['2003-04', '2003-02'],
 					})
 				},
 				action: (cy: any) => cy.get('[type="submit"]'),
@@ -257,7 +257,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['2006-06-06', '2005-05-05'],
+					hello: ['2003-04', '2003-02'],
 				},
 			});
 		});

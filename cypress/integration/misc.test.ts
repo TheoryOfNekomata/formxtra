@@ -1,7 +1,184 @@
-import { getFormValues, setFormValues } from '../../src';
+import getFormValuesDeprecated, { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
 describe('misc', () => {
+	describe('core', () => {
+		beforeEach(utils.setup(`
+			<!DOCTYPE html>
+			<html lang="en-PH">
+				<head>
+					<meta charset="UTF-8">
+					<title>Misc/Blank</title>
+				</head>
+				<body>
+					<form>
+						<button type="submit">Submit</button>
+					</form>
+				</body>
+			</html>
+		`))
+
+		it('should call console.warn for deprecated default import usage', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let consoleWarnCalled = false
+					const defaultConsoleWarn = console.warn
+					console.warn = (...args: unknown[]) => {
+						consoleWarnCalled = true
+					};
+					getFormValuesDeprecated(form, { submitter });
+					expect(consoleWarnCalled).toBe(true);
+					console.warn = defaultConsoleWarn;
+				},
+			});
+		});
+
+		it('should throw an error when providing invalid argument type as form to getFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						getFormValues(0 as unknown as HTMLFormElement, {});
+					} catch {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+
+		it('should throw an error when providing null as form to getFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						getFormValues(null as unknown as HTMLFormElement, {});
+					} catch {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+
+		it('should throw an error when providing a different element type as form to getFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						getFormValues(document.body as unknown as HTMLFormElement, {});
+					} catch {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+
+		it('should throw an error when providing invalid argument type as form to setFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						setFormValues(0 as unknown as HTMLFormElement, {});
+					} catch {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+
+		it('should throw an error when providing null as form to setFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						setFormValues(null as unknown as HTMLFormElement, {});
+					} catch {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+
+		it('should throw an error when providing a different element type as form to setFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						setFormValues(document.body as unknown as HTMLFormElement, {});
+					} catch {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+
+		it('should throw an error when providing invalid argument type as values to setFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						setFormValues(form, 0);
+					} catch {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+
+		it('should not throw an error when providing null as form to setFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						setFormValues(form, null);
+					} catch (e) {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(false);
+				},
+			});
+		});
+
+		it('should throw an error when providing undefined as form to setFormValues', () => {
+			utils.test({
+				action: (cy: any) => cy.get('[type="submit"]'),
+				test: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						setFormValues(form, undefined);
+					} catch (e) {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(true);
+				},
+			});
+		});
+	})
+
 	describe('blank', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>

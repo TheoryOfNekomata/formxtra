@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('date', () => {
+describe('week', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Basic</title>
+					<title>Week/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="date" name="hello" value="2003-04-06" />
+							<input type="week" name="hello" value="2003-W25" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -34,7 +34,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-04-06',
+					hello: '2003-W25',
 				},
 			});
 		});
@@ -46,14 +46,14 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Disabled</title>
+					<title>Week/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="date" name="hello" value="2003-06-09"
+								type="week" name="hello" value="2003-W25"
 								disabled
 							/>
 						</label>
@@ -85,7 +85,7 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Outside</title>
+					<title>Week/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -93,7 +93,7 @@ describe('date', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="date" name="hello" value="2003-04-20" form="form" />
+						<input type="week" name="hello" value="2003-W25" form="form" />
 					</label>
 				</body>
 			</html>
@@ -111,7 +111,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-04-20',
+					hello: '2003-W25',
 				},
 			});
 		});
@@ -123,14 +123,14 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Readonly</title>
+					<title>Text/Readonly</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="2003-11-11"
+								type="text" name="hello" value="2003-W25"
 								readonly
 							/>
 						</label>
@@ -152,7 +152,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2003-11-11',
+					hello: '2003-W25',
 				},
 			});
 		});
@@ -164,13 +164,13 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Programmatic Value Setting</title>
+					<title>Week/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="date" name="hello" />
+							<input type="week" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -182,7 +182,7 @@ describe('date', () => {
 			utils.test({
 				action: (cy: any) => cy.get('[type="submit"]'),
 				preAction: (form: HTMLFormElement) => {
-					setFormValues(form, { hello: new Date('2000-01-01'), })
+					setFormValues(form, { hello: '2003-W25', })
 				},
 				test: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
@@ -193,7 +193,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: '2000-01-01',
+					hello: '2003-W25',
 				},
 			});
 		});
@@ -205,17 +205,17 @@ describe('date', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Date/Duplicate</title>
+					<title>Week/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="date" name="hello" value="2007-07-07"/>
+							<input id="hello1" type="week" name="hello" value="2003-W25"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="date" name="hello" value="2008-08-08"/>
+							<input id="hello2" type="week" name="hello" value="2003-W30"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -235,7 +235,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['2007-07-07', '2008-08-08'],
+					hello: ['2003-W25', '2003-W30'],
 				},
 			});
 		});
@@ -244,7 +244,7 @@ describe('date', () => {
 			utils.test({
 				preAction: (form: HTMLFormElement) => {
 					setFormValues(form, {
-						hello: ['2006-06-06', '2005-05-05'],
+						hello: ['2003-W40', '2003-W50'],
 					})
 				},
 				action: (cy: any) => cy.get('[type="submit"]'),
@@ -257,7 +257,7 @@ describe('date', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['2006-06-06', '2005-05-05'],
+					hello: ['2003-W40', '2003-W50'],
 				},
 			});
 		});
