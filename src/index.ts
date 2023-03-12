@@ -431,9 +431,24 @@ export type HTMLInputDateTimeLocalElement = HTMLInputElement & {
 }
 
 /**
+ * Value of the `type` attribute for `<input>` elements considered as month pickers.
+ */
+const INPUT_TYPE_MONTH = 'month' as const;
+
+/**
+ * Type for an `<input type="month">` element.
+ */
+export type HTMLInputMonthElement = HTMLInputElement & {
+  type: typeof INPUT_TYPE_MONTH,
+}
+
+/**
  * Type for an `<input>` element.that handles date values.
  */
-export type HTMLInputDateLikeElement = HTMLInputDateTimeLocalElement | HTMLInputDateElement
+export type HTMLInputDateLikeElement
+  = HTMLInputDateTimeLocalElement
+  | HTMLInputDateElement
+  | HTMLInputMonthElement
 
 /**
  * Options for getting a date-like `<input>` element field value.
@@ -465,7 +480,12 @@ const getInputDateLikeFieldValue = (
 /**
  * ISO format for dates.
  */
-const DATE_FORMAT_ISO = 'yyyy-MM-DD' as const;
+const DATE_FORMAT_ISO_DATE = 'yyyy-MM-DD' as const;
+
+/**
+ * ISO format for months.
+ */
+const DATE_FORMAT_ISO_MONTH = 'yyyy-MM' as const;
 
 /**
  * Sets the value of an `<input type="date">` element.
@@ -488,7 +508,7 @@ const setInputDateLikeFieldValue = (
       valueArray[totalOfName > 1 ? nthOfName : 0] as ConstructorParameters<typeof Date>[0],
     )
       .toISOString()
-      .slice(0, DATE_FORMAT_ISO.length);
+      .slice(0, DATE_FORMAT_ISO_DATE.length);
     return;
   }
 
@@ -499,6 +519,15 @@ const setInputDateLikeFieldValue = (
     )
       .toISOString()
       .slice(0, -1); // remove extra 'Z' suffix
+  }
+
+  if (inputEl.type.toLowerCase() === INPUT_TYPE_MONTH) {
+    // eslint-disable-next-line no-param-reassign
+    inputEl.value = new Date(
+      valueArray[totalOfName > 1 ? nthOfName : 0] as ConstructorParameters<typeof Date>[0],
+    )
+      .toISOString()
+      .slice(0, DATE_FORMAT_ISO_MONTH.length); // remove extra 'Z' suffix
   }
 };
 
@@ -515,6 +544,11 @@ type GetInputFieldValueOptions
  * Value of the `type` attribute for `<input>` elements considered as text fields.
  */
 const INPUT_TYPE_TEXT = 'text' as const;
+
+/**
+ * Value of the `type` attribute for `<input>` elements considered as search fields.
+ */
+const INPUT_TYPE_SEARCH = 'search' as const;
 
 /**
  * Value of the `type` attribute for `<input>` elements considered as email fields.
@@ -568,8 +602,10 @@ const getInputFieldValue = (
       return getInputNumericFieldValue(inputEl as HTMLInputNumericElement, options);
     case INPUT_TYPE_DATE:
     case INPUT_TYPE_DATETIME_LOCAL:
+    case INPUT_TYPE_MONTH:
       return getInputDateLikeFieldValue(inputEl as HTMLInputDateLikeElement, options);
     case INPUT_TYPE_TEXT:
+    case INPUT_TYPE_SEARCH:
     case INPUT_TYPE_EMAIL:
     case INPUT_TYPE_TEL:
     case INPUT_TYPE_URL:
@@ -620,6 +656,7 @@ const setInputFieldValue = (
       return;
     case INPUT_TYPE_DATE:
     case INPUT_TYPE_DATETIME_LOCAL:
+    case INPUT_TYPE_MONTH:
       setInputDateLikeFieldValue(
         inputEl as HTMLInputDateLikeElement,
         value,
@@ -628,6 +665,7 @@ const setInputFieldValue = (
       );
       return;
     case INPUT_TYPE_TEXT:
+    case INPUT_TYPE_SEARCH:
     case INPUT_TYPE_EMAIL:
     case INPUT_TYPE_TEL:
     case INPUT_TYPE_URL:
