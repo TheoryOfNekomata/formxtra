@@ -527,6 +527,11 @@ const INPUT_TYPE_EMAIL = 'email' as const;
 const INPUT_TYPE_TEL = 'tel' as const;
 
 /**
+ * Value of the `type` attribute for `<input>` elements considered as URL fields.
+ */
+const INPUT_TYPE_URL = 'url' as const;
+
+/**
  * Value of the `type` attribute for `<input>` elements considered as password fields.
  */
 const INPUT_TYPE_PASSWORD = 'password' as const;
@@ -567,6 +572,7 @@ const getInputFieldValue = (
     case INPUT_TYPE_TEXT:
     case INPUT_TYPE_EMAIL:
     case INPUT_TYPE_TEL:
+    case INPUT_TYPE_URL:
     case INPUT_TYPE_PASSWORD:
     case INPUT_TYPE_HIDDEN:
     case INPUT_TYPE_COLOR:
@@ -624,6 +630,7 @@ const setInputFieldValue = (
     case INPUT_TYPE_TEXT:
     case INPUT_TYPE_EMAIL:
     case INPUT_TYPE_TEL:
+    case INPUT_TYPE_URL:
     case INPUT_TYPE_PASSWORD:
     case INPUT_TYPE_HIDDEN:
     case INPUT_TYPE_COLOR:
@@ -718,17 +725,12 @@ const ATTRIBUTE_DISABLED = 'disabled' as const;
  * @returns Value determining if the element is a named and enabled form field.
  */
 export const isNamedEnabledFormFieldElement = (el: HTMLElement) => {
-  if (!(ATTRIBUTE_NAME in el)) {
-    return false;
-  }
-  if (typeof el[ATTRIBUTE_NAME] !== 'string') {
-    return false;
-  }
-  const namedEl = el as unknown as HTMLElementWithName;
+  const namedEl = el as unknown as Record<string, unknown>;
   return (
-    el[ATTRIBUTE_NAME].length > 0
+    typeof namedEl[ATTRIBUTE_NAME] === 'string'
+    && namedEl[ATTRIBUTE_NAME].length > 0
     && !(ATTRIBUTE_DISABLED in namedEl && Boolean(namedEl[ATTRIBUTE_DISABLED]))
-    && isFormFieldElement(namedEl)
+    && isFormFieldElement(namedEl as unknown as HTMLElement)
   );
 };
 
