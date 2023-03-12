@@ -684,18 +684,41 @@ const getInputFieldValue = (
       break;
   }
 
-  // don't force returning `null` for custom elements supporting setting values.
   return inputEl.value;
 };
 
 /**
- * Sets the value of an `<input>` element.
+ * Sets the value of a generic `<input>` element.
  * @param inputEl - The element.
  * @param value - Value of the input element.
  * @param nthOfName - What order is this field in with respect to fields of the same name?
  * @param elementsWithSameName - How many fields with the same name are in the form?
- * @note This function is a noop for `<input type="file">` because by design, file inputs are not
- * assignable programmatically.
+ */
+const setInputGenericFieldValue = (
+  inputEl: HTMLInputElement,
+  value: unknown,
+  nthOfName: number,
+  elementsWithSameName: HTMLInputElement[],
+) => {
+  if (Array.isArray(value) && elementsWithSameName.length > 1) {
+    // eslint-disable-next-line no-param-reassign
+    inputEl.value = value[nthOfName];
+    return;
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  inputEl.value = value as string;
+};
+
+/**
+ * Sets the value of an `<input>` element.
+ *
+ * **Note:** This function is a noop for `<input type="file">` because by design, file inputs are
+ * not assignable programmatically.
+ * @param inputEl - The element.
+ * @param value - Value of the input element.
+ * @param nthOfName - What order is this field in with respect to fields of the same name?
+ * @param elementsWithSameName - How many fields with the same name are in the form?
  */
 const setInputFieldValue = (
   inputEl: HTMLInputElement,
@@ -745,14 +768,7 @@ const setInputFieldValue = (
       break;
   }
 
-  if (Array.isArray(value) && elementsWithSameName.length > 1) {
-    // eslint-disable-next-line no-param-reassign
-    inputEl.value = value[nthOfName];
-    return;
-  }
-
-  // eslint-disable-next-line no-param-reassign
-  inputEl.value = value as string;
+  setInputGenericFieldValue(inputEl, value, nthOfName, elementsWithSameName);
 };
 
 /**
@@ -984,6 +1000,12 @@ export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValu
   return fieldValues;
 };
 
+/**
+ * Normalizes input for setting form values.
+ * @param values - The values as they are provided to set.
+ * @returns The normalized values.
+ * @see setFormValues
+ */
 const normalizeValues = (values: unknown): Record<string, unknown | unknown[]> => {
   if (typeof values === 'string') {
     return Object.fromEntries(new URLSearchParams(values).entries());
