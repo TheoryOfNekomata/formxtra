@@ -246,8 +246,8 @@ export type HTMLInputCheckboxElement = HTMLInputElement & { type: typeof INPUT_T
  */
 type GetInputCheckboxFieldValueOptions = {
   /**
-   * Should we consider the `checked` attribute of checkboxes with no `value` attributes instead of
-   * the default value "on" when checked?
+   * Should we consider the `checked` attribute of `<input type="checkbox">` elements with no
+   * `value` attributes instead of the default value `"on"` when checked?
    *
    * This forces the field to get the `false` value when unchecked.
    */
@@ -377,8 +377,8 @@ export type HTMLInputFileElement = HTMLInputElement & { type: typeof INPUT_TYPE_
  */
 type GetInputFileFieldValueOptions = {
   /**
-   * Should we retrieve the `files` attribute of file inputs instead of the currently selected file
-   * names?
+   * Should we retrieve the `files` attribute of `<input type="file">` elements instead of the names
+   * of the currently selected files?
    */
   getFileObjects?: true,
 }
@@ -434,7 +434,8 @@ export type HTMLInputNumericElement = HTMLInputNumberElement | HTMLInputRangeEle
  */
 type GetInputNumberFieldValueOptions = {
   /**
-   * Should we force values to be numeric?
+   * Should we force values in `<input type="number">` and `<input type="range">` elements
+   * to be numeric?
    *
    * **Note:** Form values are retrieved to be strings by default, hence this option.
    */
@@ -522,8 +523,10 @@ export type HTMLInputDateLikeElement
  */
 type GetInputDateFieldValueOptions = {
   /**
-   * Should we force values to be dates?
-   * @note Form values are retrieved to be strings by default, hence this option.
+   * Should we force date-like values in `<input type="date">`, `<input type="datetime-local">`,
+   * and `<input type="month">` elements to be date objects?
+   *
+   * **Note:** Form values are retrieved to be strings by default, hence this option.
    */
   forceDateValues?: true,
 };
