@@ -110,6 +110,13 @@ export const makeSearchParams = (beforeValues: Record<string, unknown> | string)
 					const theValue = !Array.isArray(value) ? [value] : value
 					theValue.forEach(v => {
 						let processedLineBreaks = v
+						if (typeof v === 'object' && v.__proto__.constructor.name === 'TextualValueString') {
+							beforeSearchParams.append(key, v);
+							const vStr = v as Record<string, string>;
+							beforeSearchParams.append(vStr.dirName, vStr.dir);
+							return;
+						}
+
 						if (typeof cy !== 'undefined' && typeof v === 'string') {
 							let forceLineBreaks: string;
 

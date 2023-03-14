@@ -603,16 +603,6 @@ const setInputDateLikeFieldValue = (
       .slice(0, DATE_FORMAT_ISO_MONTH.length); // remove extra 'Z' suffix
   }
 };
-
-/**
- * Options for getting an `<input>` element field value.
- */
-type GetInputFieldValueOptions
-  = GetInputCheckboxFieldValueOptions
-  & GetInputFileFieldValueOptions
-  & GetInputNumberFieldValueOptions
-  & GetInputDateFieldValueOptions
-
 /**
  * Value of the `type` attribute for `<input>` elements considered as text fields.
  */
@@ -641,15 +631,49 @@ export type HTMLInputTextualElement
   | HTMLInputSearchElement
 
 /**
+ * Options for getting a textual `<input>` element field value.
+ */
+type GetInputTextualFieldValueOptions = {
+  /**
+   * Should we include the directionality of the value for
+   * `<input type="search">` and `<input type="text">`?
+   */
+  includeDirectionality?: true;
+}
+
+class TextualValueString extends String {
+  readonly dirName: string;
+
+  readonly dir: string;
+
+  constructor(value: unknown, dirName: string, dir: string) {
+    super(value);
+    this.dirName = dirName;
+    this.dir = dir;
+  }
+}
+
+/**
  * Gets the value of an `<input>` element for textual data.
  * @param inputEl - The element.
+ * @param options - The options.
  * @returns Value of the input element.
  */
 const getInputTextualFieldValue = (
   inputEl: HTMLInputTextualElement,
+  options = {} as GetInputTextualFieldValueOptions,
 ) => {
-  if (inputEl.dirName) {
-    return [inputEl.value, { [inputEl.dirName]: window.getComputedStyle(inputEl).direction }];
+  if (
+    options.includeDirectionality
+    && typeof window !== 'undefined'
+    && typeof window.getComputedStyle === 'function'
+    && typeof (inputEl.dirName as unknown) === 'string'
+  ) {
+    return new TextualValueString(
+      inputEl.value,
+      inputEl.dirName,
+      window.getComputedStyle(inputEl).direction || 'ltr',
+    );
   }
 
   return inputEl.value;
@@ -674,13 +698,33 @@ export type HTMLInputHiddenElement = HTMLInputElement & { type: typeof INPUT_TYP
 /**
  * Gets the value of an `<input>` element for hidden data.
  * @param inputEl - The element.
+ * @param options - The options.
+ * @returns Value of the input element.
+ */
+type GetInputHiddenFieldValueOptions = {
+  /**
+   * Should we fill in the character set for the `<input type="hidden">`
+ *   elements with name equal to `_charset_`?
+   */
+  includeCharset?: true;
+}
+
+/**
+ * Gets the value of an `<input>` element for hidden data.
+ * @param inputEl - The element.
+ * @param options - The options.
  * @returns Value of the input element.
  */
 const getInputHiddenFieldValue = (
   inputEl: HTMLInputHiddenElement,
+  options = {} as GetInputHiddenFieldValueOptions,
 ) => {
   if (
-    inputEl.name === NAME_ATTRIBUTE_VALUE_CHARSET
+    options.includeCharset
+    && typeof window !== 'undefined'
+    && typeof window.document !== 'undefined'
+    && typeof (window.document.characterSet as unknown) === 'string'
+    && inputEl.name === NAME_ATTRIBUTE_VALUE_CHARSET
     && inputEl.getAttribute(ATTRIBUTE_VALUE) === null
   ) {
     return window.document.characterSet;
@@ -688,6 +732,17 @@ const getInputHiddenFieldValue = (
 
   return inputEl.value;
 };
+
+/**
+ * Options for getting an `<input>` element field value.
+ */
+type GetInputFieldValueOptions
+  = GetInputCheckboxFieldValueOptions
+  & GetInputFileFieldValueOptions
+  & GetInputNumberFieldValueOptions
+  & GetInputDateFieldValueOptions
+  & GetInputTextualFieldValueOptions
+  & GetInputHiddenFieldValueOptions
 
 /**
  * Sets the value of an `<input type="hidden">` element.
@@ -747,6 +802,11 @@ const INPUT_TYPE_COLOR = 'color' as const;
 const INPUT_TYPE_TIME = 'time' as const;
 
 /**
+ * Value of the `type` attribute for `<input>` elements considered as week pickers.
+ */
+const INPUT_TYPE_WEEK = 'week' as const;
+
+/**
  * Gets the value of an `<input>` element.
  * @param inputEl - The element.
  * @param options - The options.
@@ -772,15 +832,16 @@ const getInputFieldValue = (
       return getInputDateLikeFieldValue(inputEl as HTMLInputDateLikeElement, options);
     case INPUT_TYPE_TEXT:
     case INPUT_TYPE_SEARCH:
-      return getInputTextualFieldValue(inputEl as HTMLInputTextualElement);
+      return getInputTextualFieldValue(inputEl as HTMLInputTextualElement, options);
     case INPUT_TYPE_HIDDEN:
-      return getInputHiddenFieldValue(inputEl as HTMLInputHiddenElement);
+      return getInputHiddenFieldValue(inputEl as HTMLInputHiddenElement, options);
     case INPUT_TYPE_EMAIL:
     case INPUT_TYPE_TEL:
     case INPUT_TYPE_URL:
     case INPUT_TYPE_PASSWORD:
     case INPUT_TYPE_COLOR:
     case INPUT_TYPE_TIME:
+    case INPUT_TYPE_WEEK:
     default:
       break;
   }
@@ -872,6 +933,7 @@ const setInputFieldValue = (
     case INPUT_TYPE_PASSWORD:
     case INPUT_TYPE_COLOR:
     case INPUT_TYPE_TIME:
+    case INPUT_TYPE_WEEK:
     default:
       break;
   }

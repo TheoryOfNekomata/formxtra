@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('text', () => {
+describe('color', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>Color/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" />
+							<input type="color" name="hello" value="#c0ffee" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -34,65 +34,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
-				},
-			});
-		});
-	});
-
-	describe('dirname', () => {
-		beforeEach(utils.setup(`
-			<!DOCTYPE html>
-			<html lang="en-PH">
-				<head>
-					<meta charset="UTF-8">
-					<title>Text/Dirname</title>
-				</head>
-				<body>
-					<form>
-						<label>
-							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" dirname="hello.dir" />
-						</label>
-						<button type="submit">Submit</button>
-					</form>
-				</body>
-			</html>
-		`))
-
-		it('should have extra value for directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'ltr',
-				},
-			});
-		});
-
-		it('should support other directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					document.getElementsByTagName('input')[0].style.direction = 'rtl';
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'rtl',
+					hello: '#c0ffee',
 				},
 			});
 		});
@@ -104,14 +46,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Disabled</title>
+					<title>Color/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="color" name="hello" value="#c0ffee"
 								disabled
 							/>
 						</label>
@@ -143,7 +85,7 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Outside</title>
+					<title>Color/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -151,7 +93,7 @@ describe('text', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="text" name="hello" value="Hi" form="form" />
+						<input type="color" name="hello" value="#c0ffee" form="form" />
 					</label>
 				</body>
 			</html>
@@ -169,7 +111,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: '#c0ffee',
 				},
 			});
 		});
@@ -181,14 +123,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Readonly</title>
+					<title>Color/Readonly</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="color" name="hello" value="#c0ffee"
 								readonly
 							/>
 						</label>
@@ -210,7 +152,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: '#c0ffee',
 				},
 			});
 		});
@@ -222,13 +164,13 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Programmatic Value Setting</title>
+					<title>Color/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" />
+							<input type="color" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -240,7 +182,7 @@ describe('text', () => {
 			utils.test({
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onLoaded: (form: HTMLFormElement) => {
-					setFormValues(form, { hello: 'Hi', })
+					setFormValues(form, { hello: '#c0ffee', })
 				},
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
@@ -251,7 +193,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: '#c0ffee',
 				},
 			});
 		});
@@ -263,17 +205,17 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Duplicate</title>
+					<title>Color/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="text" value="value" name="hello"/>
+							<input id="hello1" type="color" value="#c0ffee" name="hello"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="text" value="another value" name="hello"/>
+							<input id="hello2" type="color" value="#696969" name="hello"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -293,7 +235,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['value', 'another value'],
+					hello: ['#c0ffee', '#696969'],
 				},
 			});
 		});
@@ -302,7 +244,8 @@ describe('text', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, {
-						hello: ['new value 1', 'another value 2'],
+						// JSDOM does not support 3-digit hex colors
+						hello: ['#333333', '#aaccee'],
 					})
 				},
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
@@ -315,7 +258,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['new value 1', 'another value 2'],
+					hello: ['#333333', '#aaccee'],
 				},
 			});
 		});

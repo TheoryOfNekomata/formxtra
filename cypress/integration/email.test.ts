@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('text', () => {
+describe('email', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>Email/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" />
+							<input type="email" name="hello" value="email@example.com" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -34,65 +34,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
-				},
-			});
-		});
-	});
-
-	describe('dirname', () => {
-		beforeEach(utils.setup(`
-			<!DOCTYPE html>
-			<html lang="en-PH">
-				<head>
-					<meta charset="UTF-8">
-					<title>Text/Dirname</title>
-				</head>
-				<body>
-					<form>
-						<label>
-							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" dirname="hello.dir" />
-						</label>
-						<button type="submit">Submit</button>
-					</form>
-				</body>
-			</html>
-		`))
-
-		it('should have extra value for directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'ltr',
-				},
-			});
-		});
-
-		it('should support other directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					document.getElementsByTagName('input')[0].style.direction = 'rtl';
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'rtl',
+					hello: 'email@example.com',
 				},
 			});
 		});
@@ -104,14 +46,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Disabled</title>
+					<title>Email/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="email" name="hello" value="email@example.com"
 								disabled
 							/>
 						</label>
@@ -143,7 +85,7 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Outside</title>
+					<title>Email/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -151,7 +93,7 @@ describe('text', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="text" name="hello" value="Hi" form="form" />
+						<input type="email" name="hello" value="email@example.com" form="form" />
 					</label>
 				</body>
 			</html>
@@ -169,7 +111,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: 'email@example.com',
 				},
 			});
 		});
@@ -181,14 +123,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Readonly</title>
+					<title>Email/Readonly</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="email" name="hello" value="email@example.com"
 								readonly
 							/>
 						</label>
@@ -210,7 +152,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: 'email@example.com',
 				},
 			});
 		});
@@ -222,13 +164,13 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Programmatic Value Setting</title>
+					<title>Email/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" />
+							<input type="email" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -240,7 +182,7 @@ describe('text', () => {
 			utils.test({
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onLoaded: (form: HTMLFormElement) => {
-					setFormValues(form, { hello: 'Hi', })
+					setFormValues(form, { hello: 'email@example.com', })
 				},
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
@@ -251,7 +193,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: 'email@example.com',
 				},
 			});
 		});
@@ -263,17 +205,17 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Duplicate</title>
+					<title>Email/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="text" value="value" name="hello"/>
+							<input id="hello1" type="email" name="hello" value="email@example.com"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="text" value="another value" name="hello"/>
+							<input id="hello2" type="email" name="hello" value="peppy@example.com"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -293,7 +235,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['value', 'another value'],
+					hello: ['email@example.com', 'peppy@example.com'],
 				},
 			});
 		});
@@ -302,7 +244,7 @@ describe('text', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, {
-						hello: ['new value 1', 'another value 2'],
+						hello: ['poppy@example.com', 'pumpkin@example.com'],
 					})
 				},
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
@@ -315,7 +257,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['new value 1', 'another value 2'],
+					hello: ['poppy@example.com', 'pumpkin@example.com'],
 				},
 			});
 		});

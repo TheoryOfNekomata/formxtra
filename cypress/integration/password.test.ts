@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('text', () => {
+describe('password', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>Password/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" />
+							<input type="password" name="hello" value="Hi" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -40,78 +40,20 @@ describe('text', () => {
 		});
 	});
 
-	describe('dirname', () => {
-		beforeEach(utils.setup(`
-			<!DOCTYPE html>
-			<html lang="en-PH">
-				<head>
-					<meta charset="UTF-8">
-					<title>Text/Dirname</title>
-				</head>
-				<body>
-					<form>
-						<label>
-							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" dirname="hello.dir" />
-						</label>
-						<button type="submit">Submit</button>
-					</form>
-				</body>
-			</html>
-		`))
-
-		it('should have extra value for directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'ltr',
-				},
-			});
-		});
-
-		it('should support other directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					document.getElementsByTagName('input')[0].style.direction = 'rtl';
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'rtl',
-				},
-			});
-		});
-	});
-
 	describe('disabled', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Disabled</title>
+					<title>Password/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="password" name="hello" value="Hi"
 								disabled
 							/>
 						</label>
@@ -143,7 +85,7 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Outside</title>
+					<title>Password/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -151,7 +93,7 @@ describe('text', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="text" name="hello" value="Hi" form="form" />
+						<input type="password" name="hello" value="Hi" form="form" />
 					</label>
 				</body>
 			</html>
@@ -181,14 +123,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Readonly</title>
+					<title>Password/Readonly</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="password" name="hello" value="Hi"
 								readonly
 							/>
 						</label>
@@ -222,13 +164,13 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Programmatic Value Setting</title>
+					<title>Password/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" />
+							<input type="password" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -263,17 +205,17 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Duplicate</title>
+					<title>Password/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="text" value="value" name="hello"/>
+							<input id="hello1" type="password" value="value" name="hello"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="text" value="another value" name="hello"/>
+							<input id="hello2" type="password" value="another value" name="hello"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>

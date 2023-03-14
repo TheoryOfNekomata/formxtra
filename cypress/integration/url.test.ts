@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('text', () => {
+describe('url', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>URL/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" />
+							<input type="url" name="hello" value="https://www.example.com" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -34,65 +34,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
-				},
-			});
-		});
-	});
-
-	describe('dirname', () => {
-		beforeEach(utils.setup(`
-			<!DOCTYPE html>
-			<html lang="en-PH">
-				<head>
-					<meta charset="UTF-8">
-					<title>Text/Dirname</title>
-				</head>
-				<body>
-					<form>
-						<label>
-							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" dirname="hello.dir" />
-						</label>
-						<button type="submit">Submit</button>
-					</form>
-				</body>
-			</html>
-		`))
-
-		it('should have extra value for directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'ltr',
-				},
-			});
-		});
-
-		it('should support other directionality', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					document.getElementsByTagName('input')[0].style.direction = 'rtl';
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'rtl',
+					hello: 'https://www.example.com',
 				},
 			});
 		});
@@ -104,14 +46,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Disabled</title>
+					<title>URL/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="url" name="hello" value="https://www.example.com"
 								disabled
 							/>
 						</label>
@@ -143,7 +85,7 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Outside</title>
+					<title>URL/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -151,7 +93,7 @@ describe('text', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="text" name="hello" value="Hi" form="form" />
+						<input type="url" name="hello" value="https://www.example.com" form="form" />
 					</label>
 				</body>
 			</html>
@@ -169,7 +111,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: 'https://www.example.com',
 				},
 			});
 		});
@@ -181,14 +123,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Readonly</title>
+					<title>URL/Readonly</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="url" name="hello" value="https://www.example.com"
 								readonly
 							/>
 						</label>
@@ -210,7 +152,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: 'https://www.example.com',
 				},
 			});
 		});
@@ -222,13 +164,13 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Programmatic Value Setting</title>
+					<title>URL/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" />
+							<input type="url" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -240,7 +182,7 @@ describe('text', () => {
 			utils.test({
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onLoaded: (form: HTMLFormElement) => {
-					setFormValues(form, { hello: 'Hi', })
+					setFormValues(form, { hello: 'https://www.example.com', })
 				},
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
@@ -251,7 +193,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
+					hello: 'https://www.example.com',
 				},
 			});
 		});
@@ -263,17 +205,17 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Duplicate</title>
+					<title>URL/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="text" value="value" name="hello"/>
+							<input id="hello1" type="url" value="https://www.example.com" name="hello"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="text" value="another value" name="hello"/>
+							<input id="hello2" type="url" value="https://acme.example.com" name="hello"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -293,7 +235,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['value', 'another value'],
+					hello: ['https://www.example.com', 'https://acme.example.com'],
 				},
 			});
 		});
@@ -302,7 +244,7 @@ describe('text', () => {
 			utils.test({
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, {
-						hello: ['new value 1', 'another value 2'],
+						hello: ['https://foo.example.com', 'https://bar.example.com/context'],
 					})
 				},
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
@@ -315,7 +257,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: ['new value 1', 'another value 2'],
+					hello: ['https://foo.example.com', 'https://bar.example.com/context'],
 				},
 			});
 		});

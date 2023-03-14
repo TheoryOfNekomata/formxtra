@@ -1,20 +1,20 @@
 import { getFormValues, setFormValues } from '../../src';
 import * as utils from '../utils'
 
-describe('text', () => {
+describe('hidden', () => {
 	describe('basic', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Basic</title>
+					<title>Hidden/Basic</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" />
+							<input type="hidden" name="hello" value="Hi" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -40,19 +40,19 @@ describe('text', () => {
 		});
 	});
 
-	describe('dirname', () => {
+	describe('charset', () => {
 		beforeEach(utils.setup(`
 			<!DOCTYPE html>
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Dirname</title>
+					<title>Hidden/Charset</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" value="Hi" dirname="hello.dir" />
+							<input type="hidden" name="_charset_" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -60,11 +60,11 @@ describe('text', () => {
 			</html>
 		`))
 
-		it('should have extra value for directionality', () => {
+		it('should have extra value for character set', () => {
 			utils.test({
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
+					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeCharset: true, }))
 						.toString();
 					const after = utils.makeSearchParams(search)
 						.toString();
@@ -72,18 +72,19 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'ltr',
+					_charset_: 'UTF-8',
 				},
 			});
 		});
 
-		it('should support other directionality', () => {
+		it('should not be able to set extra value for character set', () => {
 			utils.test({
+				onLoaded: (form: HTMLFormElement) => {
+					setFormValues(form, { _charset_: 'Shift-JIS' });
+				},
 				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					document.getElementsByTagName('input')[0].style.direction = 'rtl';
-					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
+					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeCharset: true, }))
 						.toString();
 					const after = utils.makeSearchParams(search)
 						.toString();
@@ -91,8 +92,7 @@ describe('text', () => {
 						.toEqual(after);
 				},
 				expectedStaticValue: {
-					hello: 'Hi',
-					'hello.dir': 'rtl',
+					_charset_: 'UTF-8',
 				},
 			});
 		});
@@ -104,14 +104,14 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Disabled</title>
+					<title>Hidden/Disabled</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
 							<input
-								type="text" name="hello" value="Hi"
+								type="hidden" name="hello" value="Hi"
 								disabled
 							/>
 						</label>
@@ -143,7 +143,7 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Outside</title>
+					<title>Hidden/Outside</title>
 				</head>
 				<body>
 					<form id="form">
@@ -151,49 +151,8 @@ describe('text', () => {
 					</form>
 					<label>
 						<span>Hello</span>
-						<input type="text" name="hello" value="Hi" form="form" />
+						<input type="hidden" name="hello" value="Hi" form="form" />
 					</label>
-				</body>
-			</html>
-		`))
-
-		it('should have single form value', () => {
-			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
-				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
-					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
-						.toString();
-					const after = utils.makeSearchParams(search)
-						.toString();
-					expect(before)
-						.toEqual(after);
-				},
-				expectedStaticValue: {
-					hello: 'Hi',
-				},
-			});
-		});
-	});
-
-	describe('readonly', () => {
-		beforeEach(utils.setup(`
-			<!DOCTYPE html>
-			<html lang="en-PH">
-				<head>
-					<meta charset="UTF-8">
-					<title>Text/Readonly</title>
-				</head>
-				<body>
-					<form>
-						<label>
-							<span>Hello</span>
-							<input
-								type="text" name="hello" value="Hi"
-								readonly
-							/>
-						</label>
-						<button type="submit">Submit</button>
-					</form>
 				</body>
 			</html>
 		`))
@@ -222,13 +181,13 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Programmatic Value Setting</title>
+					<title>Hidden/Programmatic Value Setting</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello</span>
-							<input type="text" name="hello" />
+							<input type="hidden" name="hello" />
 						</label>
 						<button type="submit">Submit</button>
 					</form>
@@ -263,17 +222,17 @@ describe('text', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Text/Duplicate</title>
+					<title>Hidden/Duplicate</title>
 				</head>
 				<body>
 					<form>
 						<label>
 							<span>Hello 1</span>
-							<input id="hello1" type="text" value="value" name="hello"/>
+							<input id="hello1" type="hidden" value="value" name="hello"/>
 						</label>
 						<label>
 							<span>Hello 2</span>
-							<input id="hello2" type="text" value="another value" name="hello"/>
+							<input id="hello2" type="hidden" value="another value" name="hello"/>
 						</label>
 						<button type="submit">Submit</button>
 					</form>

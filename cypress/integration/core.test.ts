@@ -14,7 +14,7 @@ describe('misc', () => {
 			<html lang="en-PH">
 				<head>
 					<meta charset="UTF-8">
-					<title>Misc/Blank</title>
+					<title>Misc/Core</title>
 				</head>
 				<body>
 					<form>
@@ -184,6 +184,39 @@ describe('misc', () => {
 			});
 		});
 	});
+
+	describe('isindex', () => {
+		beforeEach(utils.setup(`
+			<!DOCTYPE html>
+			<html lang="en-PH">
+				<head>
+					<meta charset="UTF-8">
+					<title>Misc/Isindex</title>
+				</head>
+				<body>
+					<form>
+						<input name="isindex" type="text" value="value" />
+						<button type="submit">Submit</button>
+					</form>
+				</body>
+			</html>
+		`))
+
+		it('should have blank form value', () => {
+			utils.test({
+				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
+						.toString();
+					const after = utils.makeSearchParams(search)
+						.toString();
+					expect(before)
+						.toEqual(after);
+				},
+				expectedStaticValue: {},
+			});
+		});
+	})
 
 	describe('utilities', () => {
 		beforeEach(utils.setup(`
