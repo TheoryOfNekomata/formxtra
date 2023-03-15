@@ -1,6 +1,6 @@
 <header style="text-align: center; line-height: 1">
   <h1 style="margin: 0">
-    <img src="./docs/assets/formxtra.svg" alt="formxtra"/>
+    <img src="https://raw.githubusercontent.com/TheoryOfNekomata/formxtra/master/docs/assets/formxtra.svg" alt="formxtra"/>
   </h1>
   <h2 style="margin: 0">
     The companion for Web forms!
