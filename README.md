@@ -26,7 +26,7 @@ The package can be found on:
 1. Lay out your input elements (all valid input types supported including `<select>` and `<textarea>`) then bind them
    to a form:
    * Put them inside a `<form>`.
-   * Alternatively, use the `form=""` attribute then specify the form `id` where they will be bound).
+   * Alternatively, use the `form=""` attribute then specify the form `id` where they will be bound.
 2. Add `name=""` attributes to your input elements.
 3. Get your `<form>` element:
    * Query the form directly.
@@ -40,20 +40,35 @@ The package can be found on:
 For an example form:
 
 ```html
-<button id="autofill" type="button">
-  Autofill login form
-</button>
-
-<form id="loginForm">
-  <input type="text" name="username" />
-  <input type="password" name="password" />
-  <button type="submit" name="type" value="client">
-    Log In As Client
+<form id="loginForm" aria-label="Login Form">
+  <button id="autofill" type="button">
+    Autofill login form (username: admin)
   </button>
-  <button type="submit" name="type" value="admin">
-    Log In As Admin
-  </button>
+  
+  <hr />
+  
+  <fieldset>
+    <legend>
+      Login
+    </legend>
+    <div>
+      <input type="text" name="username" placeholder="Username" />
+    </div>
+    <div>
+      <input type="password" name="password" placeholder="Password" />
+    </div>
+    <div>
+      <button type="submit" name="type" value="client">
+        Log In As Client
+      </button>
+      <button type="submit" name="type" value="admin">
+        Log In As Admin
+      </button>
+    </div>
+  </fieldset>
 </form>
+
+<!-- Input elements can be placed outside the form element they are bound to. -->
 
 <label>
   <input type="checkbox" name="remember" form="loginForm" />
@@ -103,10 +118,11 @@ form.addEventListener('submit', async e => {
   }
 });
 
+// You can use fomrxtra directly with elements as long as they are bound to a form.
 const autofillButton = document.getElementById('autofill');
 
 autofillButton.addEventListener('click', e => {
-  setFormValues(form, { username: 'admin', remember: true });
+  setFormValues(e.currentTarget.form, { username: 'admin', remember: true });
 });
 ```
 
