@@ -23,6 +23,20 @@ The package can be found on:
 
 ## Usage
 
+1. Lay out your input elements (all valid input types supported including `<select>` and `<textarea>`) then bind them
+   to a form:
+   * Put them inside a `<form>`.
+   * Alternatively, use the `form=""` attribute then specify the form `id` where they will be bound).
+2. Add `name=""` attributes to your input elements.
+3. Get your `<form>` element:
+   * Query the form directly.
+   * If you want to retrieve/set the form values through an individual input element (e.g. in the case of value change
+     events like `onchange`), use the `inputElement.form` attribute.
+4. Use `getFormValues()` to retrieve all bound input elements' values, or `setFormValues()` to set them (setting only
+   some fields' values is supported).
+
+### Example
+
 For an example form:
 
 ```html
