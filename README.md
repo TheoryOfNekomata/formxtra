@@ -1,10 +1,17 @@
-# formxtra
-
-![formxtra logo](./docs/assets/formxtra.svg)
-
-**The companion for Web forms!**
-
-Extract and set form values through the DOM.
+<header style="text-align: center; line-height: 1">
+  <h1 style="margin: 0">
+    <img src="./docs/assets/formxtra.svg" alt="formxtra"/>
+  </h1>
+  <h2 style="margin: 0">
+    The companion for Web forms!
+  </h2>
+  <p style="font-size: 125%">
+    Extract and set form values through the DOM&mdash;no frameworks required!
+  </p>
+  <p>
+    Lightweight. Simple. It Just Works.
+  </p>
+</header>
 
 ## Installation
 
@@ -89,6 +96,15 @@ autofillButton.addEventListener('click', e => {
 });
 ```
 
+There are utility functions exported alongside `getFormValues()` and `setFormValues()`. You may want to use namespace
+import with this library, i.e. `import * as formxtra from '@theoryofnekomata/formxtra'`.
+
+See the [documentation folder](./docs) for more details.
+
 ## Tests
 
 The library has been tested on the static DOM using JSDOM, and the real dynamic DOM using Cypress.
+
+## License
+
+[MIT](./LICENSE)
