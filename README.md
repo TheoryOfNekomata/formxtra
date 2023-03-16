@@ -1,17 +1,19 @@
-<header align="center" style="text-align: center !important; line-height: 1 !important; border: 0 !important;">
-  <h1 style="margin: 0 !important;">
+<p align="center" style="text-align: center !important; line-height: 1 !important; border: 0 !important;">
+  <h1 align="center">
     <img src="https://raw.githubusercontent.com/TheoryOfNekomata/formxtra/master/docs/assets/formxtra.svg" alt="formxtra"/>
   </h1>
-  <h2 style="margin: 0 !important;">
+  <h2 align="center">
     The companion for Web forms!
   </h2>
-  <p style="font-size: 125% !important">
-    Extract and set form values through the DOM&mdash;no frameworks required!
-  </p>
-  <p>
+  <div align="center">
+    <big>
+      Extract and set form values through the DOM&mdash;no frameworks required!
+    </big>
+  </div>
+  <div align="center">
     Lightweight. Simple. It Just Works.
-  </p>
-</header>
+  </div>
+</p>
 
 ## Installation and Sources
 
