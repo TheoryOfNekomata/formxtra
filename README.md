@@ -6,9 +6,9 @@
     The companion for Web forms!
   </h2>
   <div align="center">
-    <big>
+    <b>
       Extract and set form values through the DOM&mdash;no frameworks required!
-    </big>
+    </b>
   </div>
   <div align="center">
     Lightweight. Simple. It Just Works.
@@ -161,6 +161,6 @@ needed, the proper usages are documented via TSDoc comments.
 The library has been tested on the static DOM using JSDOM, and the real dynamic DOM using Cypress. This is to guarantee
 compatibility across environments.
 
-See the [documentation folder](./docs) for more details on this library.
+See the [documentation folder](https://code.modal.sh/TheoryOfNekomata/formxtra/src/branch/master/docs) for more details on this library.
 
-The sources are under the [MIT license](./LICENSE).
+The sources are under the [MIT license](https://code.modal.sh/TheoryOfNekomata/formxtra/raw/branch/master/LICENSE).
