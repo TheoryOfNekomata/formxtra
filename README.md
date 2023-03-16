@@ -1,11 +1,11 @@
-<header style="text-align: center; line-height: 1">
-  <h1 style="margin: 0">
+<header align="center" style="text-align: center !important; line-height: 1 !important; border: 0 !important;">
+  <h1 style="margin: 0 !important;">
     <img src="https://raw.githubusercontent.com/TheoryOfNekomata/formxtra/master/docs/assets/formxtra.svg" alt="formxtra"/>
   </h1>
-  <h2 style="margin: 0">
+  <h2 style="margin: 0 !important;">
     The companion for Web forms!
   </h2>
-  <p style="font-size: 125%">
+  <p style="font-size: 125% !important">
     Extract and set form values through the DOM&mdash;no frameworks required!
   </p>
   <p>
@@ -13,13 +13,16 @@
   </p>
 </header>
 
-## Installation
+## Installation and Sources
 
 The package can be found on:
 
 - [Modal Pack](https://js.pack.modal.sh)
 - [npm](https://npmjs.com/package/@theoryofnekomata/formxtra)
 - [GitHub Package Registry](https://github.com/TheoryOfNekomata/formxtra/packages/793279)
+
+The package sources can be found on the [main Modal Code repository](https://code.modal.sh/TheoryOfNekomata/formxtra)
+with an [active GitHub mirror](https://github.com/TheoryOfNekomata/formxtra).
 
 ## Usage
 
@@ -37,12 +40,19 @@ The package can be found on:
 
 ### Example
 
+Interactive code samples can be found on Codepen:
+
+* [Vanilla JS usage](https://codepen.io/theoryofnekomata/pen/xxajmvJ)
+* [React integration](https://codepen.io/theoryofnekomata/pen/RwYyvZN)
+* [Vue integration](https://codepen.io/theoryofnekomata/pen/gOdzqzM)
+* [Solid integration](https://codepen.io/theoryofnekomata/pen/QWVrYem)
+
 For an example form:
 
 ```html
 <form id="loginForm" aria-label="Login Form">
   <button id="autofill" type="button">
-    Autofill login form (username: admin)
+    Autofill login form (username: admin, remember: true)
   </button>
   
   <hr />
@@ -81,9 +91,7 @@ Use the library as follows (code is in TypeScript, but can work with JavaScript 
 ```typescript
 import { getFormValues, setFormValues } from '@theoryofnekomata/formxtra';
 
-// This is the only query we need. On libraries like React, we can easily get form elements when we
-// attach submit event listeners.
-const form: HTMLFormElement = document.getElementById('form');
+const form: HTMLFormElement = document.getElementById('loginForm');
 
 const processResponse = async (response: Response) => {
   const result = await response.json();
@@ -91,7 +99,7 @@ const processResponse = async (response: Response) => {
   alert(`Welcome ${result.user}!`);
 };
 
-// Best use case is with event handlers
+// Use formxtra in event handlers
 form.addEventListener('submit', async e => {
   const {
     currentTarget: thisForm,
@@ -115,7 +123,10 @@ form.addEventListener('submit', async e => {
 
   if (response.ok) {
     processResponse(response);
+    return;
   }
+  
+  alert('Invalid login!');
 });
 
 // You can use fomrxtra directly with elements as long as they are bound to a form.
@@ -126,15 +137,28 @@ autofillButton.addEventListener('click', e => {
 });
 ```
 
-There are utility functions exported alongside `getFormValues()` and `setFormValues()`. You may want to use namespace
-import with this library, i.e. `import * as formxtra from '@theoryofnekomata/formxtra'`.
+### API
 
-See the [documentation folder](./docs) for more details.
+These are all the exported methods in the library:
 
-## Tests
+```typescript
+import {
+  getFormValues,
+  setFormValues,
+  getValue,
+  isElementValueIncludedInFormSubmit,
+  isFieldElement,
+} from '@theoryofnekomata/formxtra';
+```
 
-The library has been tested on the static DOM using JSDOM, and the real dynamic DOM using Cypress.
+One would usually need only the `getFormValues()` and `setFormValues()` functions, however if the utility functions are
+needed, the proper usages are documented via TSDoc comments.
 
-## License
+## Additional Information
 
-[MIT](./LICENSE)
+The library has been tested on the static DOM using JSDOM, and the real dynamic DOM using Cypress. This is to guarantee
+compatibility across environments.
+
+See the [documentation folder](./docs) for more details on this library.
+
+The sources are under the [MIT license](./LICENSE).
