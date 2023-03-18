@@ -5,6 +5,7 @@
 Let us set some facts about existing form libraries:
 
 * Form libraries, especially framework-specific ones have verbose syntax.
+  * Verbose, as in dealing with terms that are unique to its respective form library API.
   * Please go to your form library of choice and compare the syntax yourself.
 * Form libraries are dependent on the architecture of the framework (such as [React Hook Form](https://www.npmjs.com/package/react-hook-form) and [Formik](https://www.npmjs.com/package/formik)) and
   requires using their features.
@@ -24,19 +25,23 @@ Let us set some facts about existing form libraries:
   all (data-driven) websites should do anyway.
 * `formxtra` is lightweight, even smaller than [React Hook Form](https://www.npmjs.com/package/react-hook-form) and [Formik](https://www.npmjs.com/package/formik).
 * `formxtra` is already type-safe, being written in TypeScript and providing types, thanks to [pridepack](https://www.npmjs.com/package/pridepack) as a scaffold.
+* `formxtra` is guaranteed to work with all major browsers (however `formxtra` is not yet tested with older browsers.
+  If you want to contribute for support on an older browser, a PR would be appreciated).
 
 **What does `formxtra` not offer?**
 
-* `formxtra` is not a validation library, nor does it provide utility functions for validation.
+* `formxtra` is neither a validation library, nor does it provide utility functions for validation.
   * However, one could use `formxtra` in tandem with other validation libraries
     such as `ajv` or `yup` for instance, by validating the values returned by `getFormValues()`.
-* `formxtra` does not provide compatibility to custom components.
+* `formxtra` does not provide out-of-the-box compatibility with custom components.
   * Because custom components have different
     implementations that mostly favor user experience over compliance, `formxtra` does not guarantee it can work with them
     out of the box.
   * However, the solution for this is to provide a corresponding `<input type="hidden">` element for each custom\
     component, which should always get the latter's serializable value. In return, this can also simplify the submission
     of the form as the custom components' values are already in the form.
+
+---
 
 Forms are used to package related data, typically sent to an external location or processed internally. In the browser,
 the default behavior of submitting form data is not always preferred, as this is done through loading or reloading a
@@ -53,6 +58,9 @@ time. It might be a simple improvement to the user experience, but the logic beh
 inconsistencies in setting up each field value depending on the form library being used.
 
 Upon retrieving the field values somehow, some libraries attempt to duplicate the values of the fields as they change,
-for instance by attaching event listeners and storing the new values into some internal object or map. This is then
-retrieved by some other exposed function or mechanism within that library. This is common with reactive frameworks,
-where changes to the document are essential to establish functionality and improved user experience.
+for instance by attaching event listeners and storing the new values into some internal store such as an object or a map.
+This is then retrieved by some other exposed function or mechanism within that library. This is common with reactive
+frameworks, where changes to the document are essential to establish functionality and improved user experience.
+
+This is why `formxtra` was made, in order to show a very simplistic and straightforward relation between the form as
+interacted with the user, and the state of the form controls as it is manifested in the DOM.
