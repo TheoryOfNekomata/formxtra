@@ -1021,23 +1021,34 @@ const NAME_ATTRIBUTE_VALUE_ISINDEX = 'isindex' as const;
 /**
  * Determines if an element's value is included when its form is submitted.
  * @param el - The element.
+ * @param includeDisabled - Should we include disabled field elements?
  * @returns Value determining if the element's value is included when its form is submitted.
  */
-export const isElementValueIncludedInFormSubmit = (el: HTMLElement) => {
+export const isElementValueIncludedInFormSubmit = (el: HTMLElement, includeDisabled = false) => {
   const namedEl = el as unknown as Record<string, unknown>;
   return (
     typeof namedEl[ATTRIBUTE_NAME] === 'string'
     && namedEl[ATTRIBUTE_NAME].length > 0
     && namedEl[ATTRIBUTE_NAME] !== NAME_ATTRIBUTE_VALUE_ISINDEX
-    && !(ATTRIBUTE_DISABLED in namedEl && Boolean(namedEl[ATTRIBUTE_DISABLED]))
+    && (includeDisabled || !(ATTRIBUTE_DISABLED in namedEl && Boolean(namedEl[ATTRIBUTE_DISABLED])))
     && isFieldElement(namedEl as unknown as HTMLElement)
   );
 };
 
 /**
+ * Options for all form value functions.
+ */
+type FormValuesOptions = {
+  /**
+   * Should we include disabled field elements?
+   */
+  includeDisabled?: true,
+}
+
+/**
  * Options for getting form values.
  */
-type GetFormValuesOptions = GetFieldValueOptions & {
+type GetFormValuesOptions = FormValuesOptions & GetFieldValueOptions & {
   /**
    * The element that triggered the submission of the form.
    */
@@ -1081,9 +1092,10 @@ const assertIsFormElement = (maybeForm: unknown, context: string) => {
 /**
  * Filters the form elements that can be processed.
  * @param form - The form element.
+ * @param includeDisabled - Should we include disabled field elements?
  * @returns Array of key-value pairs for the field names and field elements.
  */
-const filterFieldElements = (form: HTMLFormElement) => {
+const filterFieldElements = (form: HTMLFormElement, includeDisabled = false) => {
   const formElements = form.elements as unknown as Record<string | number, HTMLElement>;
   const allFormFieldElements = Object.entries<HTMLElement>(formElements);
   return allFormFieldElements.filter(([k, el]) => (
@@ -1091,7 +1103,7 @@ const filterFieldElements = (form: HTMLFormElement) => {
     !Number.isNaN(Number(k))
 
     // Only the enabled/read-only elements can be enumerated.
-    && isElementValueIncludedInFormSubmit(el)
+    && isElementValueIncludedInFormSubmit(el, includeDisabled)
   )) as [string, HTMLElementWithName][];
 };
 
@@ -1104,7 +1116,7 @@ const filterFieldElements = (form: HTMLFormElement) => {
 export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValuesOptions) => {
   assertIsFormElement(form, 'getFormValues');
 
-  const fieldElements = filterFieldElements(form);
+  const fieldElements = filterFieldElements(form, Boolean(options.includeDisabled));
   const fieldValues = fieldElements.reduce(
     (theFormValues, [, el]) => {
       const fieldValue = getValue(el, options);
@@ -1237,14 +1249,21 @@ const getElementsOfSameName = (fieldElementEntries: [string, HTMLElementWithName
 );
 
 /**
+ * Options for setting form values.
+ */
+type SetFormValuesOptions = FormValuesOptions;
+
+/**
  * Sets the values of all the fields within the form through accessing the DOM nodes. Partial values
  * may be passed to set values only to certain form fields.
  * @param form - The form.
  * @param values - The form values.
+ * @param options - The options.
  */
 export const setFormValues = (
   form: HTMLFormElement,
   values: unknown,
+  options = {} as SetFormValuesOptions,
 ) => {
   assertIsFormElement(form, 'getFormValues');
   const valuesType = typeof values;
@@ -1258,11 +1277,16 @@ export const setFormValues = (
   }
 
   const objectValues = normalizeValues(values);
-  const fieldElements = filterFieldElements(form);
+  const fieldElements = filterFieldElements(form, Boolean(options.includeDisabled));
   const filteredFieldElements = fieldElements.filter(([, el]) => el.name in objectValues);
   const elementsWithSameName = getElementsOfSameName(filteredFieldElements);
   doSetFormValues(filteredFieldElements, elementsWithSameName, objectValues);
 };
+
+/**
+ * Options for clearing form values.
+ */
+type ClearFormValuesOptions = FormValuesOptions;
 
 /**
  * Clears the values of all the fields within the form through accessing the DOM nodes. Partial
@@ -1272,14 +1296,16 @@ export const setFormValues = (
  *
  * @param form - The form.
  * @param fieldNames - The field names to clear their corresponding element(s).
+ * @param options - The options.
  */
 export const clearFormValues = (
   form: HTMLFormElement,
   fieldNames: string | string[],
+  options = {} as ClearFormValuesOptions,
 ) => {
   assertIsFormElement(form, 'clearFormValues');
   const fieldNamesNormalized = Array.isArray(fieldNames) ? fieldNames : [fieldNames];
-  const fieldElements = filterFieldElements(form);
+  const fieldElements = filterFieldElements(form, Boolean(options.includeDisabled));
   const filteredFieldElements = fieldElements.filter(
     ([, el]) => fieldNamesNormalized.includes(el.name),
   );

@@ -172,8 +172,4 @@ add values to the form (such as specifying which action to take for the rest of 
 [usability table for `SubmitEvent.submitter`](https://caniuse.com/mdn-api_submitevent_submitter) to check if your target
 browser is supported.
 
-Setting form values of disabled elements is not supported by design, as `formxtra` is made for submittable form
-elements. If a disabled element's value needs to be changed somehow, the form instance is already available, and the
-element to be looked up is accessible via `HTMLFormElement.elements`.
-
 The sources are under the [MIT license](https://code.modal.sh/TheoryOfNekomata/formxtra/raw/branch/master/LICENSE).

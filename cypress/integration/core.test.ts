@@ -336,6 +336,7 @@ describe('misc', () => {
 				<body>
 					<form>
 						<input type="text" name="foobar" />
+						<input type="text" name="disabled" disabled />
 						<button type="submit">Submit</button>
 					</form>
 				</body>
@@ -409,6 +410,23 @@ describe('misc', () => {
 				},
 			})
 		});
+
+		it('should allow setting values for disabled elements', () => {
+			utils.test({
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					let isThrown = false;
+					try {
+						setFormValues(form, { foobar: 'baz', disabled: 'new value' }, { includeDisabled: true });
+					} catch (e) {
+						isThrown = true;
+					}
+
+					expect(isThrown).toBe(false);
+					expect(getFormValues(form, { includeDisabled: true })).toEqual({ foobar: 'baz', disabled: 'new value', });
+				},
+			})
+		});
 	});
 
 
@@ -430,6 +448,7 @@ describe('misc', () => {
 						<input type="radio" name="foo" value="value1" checked />
 						<input type="radio" name="foo" value="value2" />
 						<input type="radio" name="foo" value="value3" />
+						<input type="text" name="disabled" value="disabled" disabled />
 						<button type="submit">Submit</button>
 					</form>
 				</body>
@@ -452,6 +471,19 @@ describe('misc', () => {
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					clearFormValues(form, ['foobar', 'bar', 'foo']);
 					expect(getFormValues(form)).toEqual({ foobar: ['', ''], baz: 'value3', bar: ['', ''], });
+				},
+			});
+		});
+
+		it('should clear all values given disabled option', () => {
+			utils.test({
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					clearFormValues(form, ['foobar', 'bar', 'foo', 'disabled'], { includeDisabled: true });
+					expect(getFormValues(form, { includeDisabled: true })).toEqual({
+						foobar: ['', ''], baz: 'value3', bar: ['', ''],
+						disabled: '',
+					});
 				},
 			});
 		});
