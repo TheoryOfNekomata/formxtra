@@ -24,7 +24,7 @@ describe('radio', () => {
 
 		it('should have no form values', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					const before = utils.makeSearchParams(values)
@@ -63,7 +63,7 @@ describe('radio', () => {
 
 		it('should have single form value on a single field', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -111,7 +111,7 @@ describe('radio', () => {
 
 		it('should get last value as checked', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -133,7 +133,7 @@ describe('radio', () => {
 						enabled: ['hello 3', 'hello 4'],
 					})
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -183,7 +183,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: true, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -197,7 +197,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'true', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('true');
@@ -211,7 +211,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'yes', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('yes');
@@ -225,7 +225,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'on', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on');
@@ -239,7 +239,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: false, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -253,7 +253,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'false', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('false');
@@ -267,7 +267,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'no', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('no')
@@ -281,7 +281,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'off', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('off');
@@ -295,7 +295,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 1, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined();
@@ -309,7 +309,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: '1', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('1');
@@ -323,7 +323,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 0, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -337,7 +337,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: '0', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('0')
@@ -351,7 +351,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: null, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -365,7 +365,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'null', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('null');
@@ -379,7 +379,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: true, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -393,7 +393,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: ['foo', 'bar', 'baz', 'on'], })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on')
@@ -407,7 +407,7 @@ describe('radio', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: ['foo', 'bar', 'baz', 'on', 'default', 'true'], })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('true')

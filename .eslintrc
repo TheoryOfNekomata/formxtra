@@ -8,7 +8,11 @@
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-return": "off",
-    "@typescript-eslint/no-unsafe-call": "off"
+    "@typescript-eslint/no-unsafe-call": "off",
+    "no-param-reassign": ["error", {
+      "props": true,
+      "ignorePropertyModificationsForRegex": ["[Ee]l$"]
+    }]
   },
   "parserOptions": {
     "project": "./tsconfig.eslint.json"

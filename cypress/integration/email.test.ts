@@ -24,7 +24,7 @@ describe('email', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -65,7 +65,7 @@ describe('email', () => {
 
 		it('should have blank form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -101,7 +101,7 @@ describe('email', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -142,7 +142,7 @@ describe('email', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -180,7 +180,7 @@ describe('email', () => {
 
 		it('should have form values set', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: 'email@example.com', })
 				},
@@ -225,7 +225,7 @@ describe('email', () => {
 
 		it('should get both values', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -247,7 +247,7 @@ describe('email', () => {
 						hello: ['poppy@example.com', 'pumpkin@example.com'],
 					})
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();

@@ -24,7 +24,7 @@ describe('file', () => {
 
 		it('should have no form values when no file is selected', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -41,13 +41,12 @@ describe('file', () => {
 
 		it('should have single form value when a file is selected', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => {
+				onBeforeSubmit: (cy) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile('uploads/data.json')
-
-					return cy.get('[type="submit"]')
 				},
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -64,13 +63,12 @@ describe('file', () => {
 
 		it('should retrieve the file list upon setting appropriate option', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => {
+				onBeforeSubmit: (cy: any) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile('uploads/data.json')
-
-					return cy.get('[type="submit"]')
 				},
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any) => {
 					const formValues = getFormValues(form,
 						{
@@ -89,7 +87,7 @@ describe('file', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: 'data.json' });
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any) => {
 					const formValues = getFormValues(
 						form,
@@ -127,7 +125,7 @@ describe('file', () => {
 
 		it('should have no form values when no file is selected', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -144,13 +142,12 @@ describe('file', () => {
 
 		it('should have single form value when a file is selected', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => {
+				onBeforeSubmit: (cy: any) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile(['uploads/data.json', 'uploads/data2.json'])
-
-					return cy.get('[type="submit"]')
 				},
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -165,13 +162,12 @@ describe('file', () => {
 
 		it('should retrieve the file list upon setting appropriate option', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => {
+				onBeforeSubmit: (cy: any) => {
 					cy
 						.get('[name="hello"]')
 						.attachFile(['uploads/data.json', 'uploads/data2.json'])
-
-					return cy.get('[type="submit"]')
 				},
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any) => {
 					const formValues = getFormValues(form,
 						{

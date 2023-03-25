@@ -24,7 +24,7 @@ describe('text', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -62,7 +62,7 @@ describe('text', () => {
 
 		it('should have extra value for directionality', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
 						.toString();
@@ -80,7 +80,7 @@ describe('text', () => {
 
 		it('should support other directionality', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					document.getElementsByTagName('input')[0].style.direction = 'rtl';
 					const before = utils.makeSearchParams(getFormValues(form, { submitter, includeDirectionality: true, }))
@@ -123,7 +123,7 @@ describe('text', () => {
 
 		it('should have blank form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -159,7 +159,7 @@ describe('text', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -200,7 +200,7 @@ describe('text', () => {
 
 		it('should have single form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -238,7 +238,7 @@ describe('text', () => {
 
 		it('should have form values set', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { hello: 'Hi', })
 				},
@@ -283,7 +283,7 @@ describe('text', () => {
 
 		it('should get both values', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -305,7 +305,7 @@ describe('text', () => {
 						hello: ['new value 1', 'another value 2'],
 					})
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();

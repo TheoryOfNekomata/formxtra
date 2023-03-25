@@ -20,7 +20,7 @@ describe('misc', () => {
 
 		it('should have blank form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -180,7 +180,7 @@ describe('misc', () => {
 
 		it('should have correct form values', () => {
 			utils.test({
-				actionBeforeSubmit: (cy) => {
+				onBeforeSubmit: (cy) => {
 					cy.get('[name="first_name"]')
 						.type('John')
 					cy.get('[name="middle_name"]')
@@ -228,8 +228,8 @@ describe('misc', () => {
 						.trigger('change')
 					cy.get('[name="notes"]')
 						.type('Test content\n\nNew line\n\nAnother line')
-					return cy.get('[name="submit"][value="Hi"]')
 				},
+				querySubmitter: (cy) => cy.get('[name="submit"][value="Hi"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -245,7 +245,8 @@ describe('misc', () => {
 
 		it('should have filled form values', () => {
 			utils.test({
-				actionBeforeSubmit: (cy) => cy.wait(3000).get('[name="submit"][value="Hi"]'),
+				onBeforeSubmit: (cy: any) => cy.wait(3000),
+				querySubmitter: (cy) => cy.get('[name="submit"][value="Hi"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();

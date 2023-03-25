@@ -8,7 +8,7 @@ type RetrieveSubmitterFn = (wrapper: typeof cy | JSDOMDummyCypress) => any
 
 type HTMLSubmitterElement = HTMLButtonElement | HTMLInputElement
 
-type TestFn = (form: HTMLFormElement, submitter: HTMLSubmitterElement, after: ExpectedSearchValue) => unknown
+type TestFn = (form: HTMLFormElement, submitter?: HTMLSubmitterElement, after?: ExpectedSearchValue) => unknown
 
 export const setup = (template: string) => {
 	if (typeof cy !== 'undefined') {
@@ -26,18 +26,20 @@ export const setup = (template: string) => {
 }
 
 type TestOptions = {
-	actionBeforeSubmit: RetrieveSubmitterFn,
-	onSubmitted: TestFn,
+	querySubmitter: RetrieveSubmitterFn,
+	onSubmitted?: TestFn,
 	expectedStaticValue?: ExpectedSearchValue,
-	onLoaded?: Function,
+	onLoaded?: TestFn,
+	onBeforeSubmit?: RetrieveSubmitterFn,
 }
 
 export const test = (options: TestOptions) => {
 	const {
-		actionBeforeSubmit: retrieveSubmitterFn,
-		onSubmitted: testFn,
+		querySubmitter,
+		onSubmitted,
 		expectedStaticValue,
 		onLoaded,
+		onBeforeSubmit,
 	} = options;
 	let form: HTMLFormElement
 	let submitter: HTMLButtonElement | HTMLInputElement
@@ -49,15 +51,13 @@ export const test = (options: TestOptions) => {
 			.then((formResult: any) => {
 				[form] = Array.from(formResult);
 
-				if (typeof onLoaded === 'function') {
-					onLoaded(form);
-				}
+				onLoaded?.(form);
 			})
 
-		r = retrieveSubmitterFn(cy)
-			.then((submitterQueryEl: any) => {
-				[submitter] = Array.from(submitterQueryEl as any[])
-			})
+		onBeforeSubmit?.(cy);
+		r = querySubmitter(cy).then((submitterQueryEl: any) => {
+			[submitter] = Array.from(submitterQueryEl as any[])
+		})
 
 		if (typeof expectedStaticValue !== 'undefined') {
 			r.click()
@@ -66,7 +66,7 @@ export const test = (options: TestOptions) => {
 				.location('search')
 				.then((search: any) => {
 					setTimeout(() => {
-						testFn(form, submitter, search)
+						onSubmitted?.(form, submitter, search)
 					}, 0)
 				})
 		} else {
@@ -74,21 +74,20 @@ export const test = (options: TestOptions) => {
 				.location('search')
 				.then((search: any) => {
 					setTimeout(() => {
-						testFn(form, submitter, search)
+						onSubmitted?.(form, submitter, search)
 					}, 0);
 				})
 		}
 	} else {
-		r = retrieveSubmitterFn(new JSDOMDummyCypress())
+		const jsdomCy = new JSDOMDummyCypress()
+		onBeforeSubmit?.(jsdomCy);
+		r = querySubmitter(jsdomCy)
 			.then((submitterQueryEl: any) => {
 				[submitter] = Array.from(submitterQueryEl as any[]);
 				[form] = Array.from(window.document.getElementsByTagName('form'))
 
-				if (typeof onLoaded === 'function') {
-					onLoaded(form);
-				}
-
-				testFn(form, submitter, expectedStaticValue)
+				onLoaded?.(form);
+				onSubmitted?.(form, submitter, expectedStaticValue)
 			})
 
 		if (typeof expectedStaticValue !== 'undefined') {

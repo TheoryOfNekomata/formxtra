@@ -24,7 +24,7 @@ describe('checkbox', () => {
 
 		it('should have no form values', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					const before = utils.makeSearchParams(values)
@@ -42,7 +42,7 @@ describe('checkbox', () => {
 
 		it('should have false checked value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form,
 						{
@@ -79,7 +79,7 @@ describe('checkbox', () => {
 
 		it('should have single form value on a single field', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -127,7 +127,7 @@ describe('checkbox', () => {
 
 		it('should get both values', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -149,7 +149,7 @@ describe('checkbox', () => {
 						enabled: ['hello 3', 'hello 4'],
 					})
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -190,7 +190,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: true, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on');
@@ -204,7 +204,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'true', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on');
@@ -218,7 +218,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'yes', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on');
@@ -232,7 +232,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'on', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on');
@@ -246,7 +246,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: false, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -260,7 +260,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'false', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -274,7 +274,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'no', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -288,7 +288,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'off', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -302,7 +302,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 1, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on');
@@ -316,7 +316,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: '1', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBe('on');
@@ -330,7 +330,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 0, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -344,7 +344,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: '0', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -358,7 +358,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: null, })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()
@@ -372,7 +372,7 @@ describe('checkbox', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { enabled: 'null', })
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const values = getFormValues(form, { submitter })
 					expect(values['enabled']).toBeUndefined()

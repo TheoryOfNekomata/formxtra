@@ -3,7 +3,7 @@ import getFormValuesDeprecated, {
 	setFormValues,
 	isFieldElement,
 	isElementValueIncludedInFormSubmit,
-	getValue,
+	getValue, clearFormValues,
 } from '../../src';
 import * as utils from '../utils'
 
@@ -26,7 +26,7 @@ describe('misc', () => {
 
 		it('should call console.warn for deprecated default import usage', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let consoleWarnCalled = false
 					const defaultConsoleWarn = console.warn
@@ -40,9 +40,28 @@ describe('misc', () => {
 			});
 		});
 
+		it('should call noop for deprecated default import usage when console is not found', () => {
+			utils.test({
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					let consoleWarnCalled = false
+					const defaultConsoleWarn = console.warn
+					console.warn = (...args: unknown[]) => {
+						consoleWarnCalled = true
+					};
+					const globalConsole = global.console;
+					global.console = undefined;
+					getFormValuesDeprecated(form, { submitter });
+					expect(consoleWarnCalled).toBe(false);
+					global.console = globalConsole;
+					console.warn = defaultConsoleWarn;
+				},
+			});
+		});
+
 		it('should throw an error when providing invalid argument type as form to getFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -58,7 +77,7 @@ describe('misc', () => {
 
 		it('should throw an error when providing null as form to getFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -74,7 +93,7 @@ describe('misc', () => {
 
 		it('should throw an error when providing a different element type as form to getFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -90,7 +109,7 @@ describe('misc', () => {
 
 		it('should throw an error when providing invalid argument type as form to setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -106,7 +125,7 @@ describe('misc', () => {
 
 		it('should throw an error when providing null as form to setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -122,7 +141,7 @@ describe('misc', () => {
 
 		it('should throw an error when providing a different element type as form to setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -138,7 +157,7 @@ describe('misc', () => {
 
 		it('should throw an error when providing invalid argument type as values to setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -154,7 +173,7 @@ describe('misc', () => {
 
 		it('should not throw an error when providing null as form to setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -170,7 +189,7 @@ describe('misc', () => {
 
 		it('should throw an error when providing undefined as form to setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -204,7 +223,7 @@ describe('misc', () => {
 
 		it('should have blank form value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const before = utils.makeSearchParams(getFormValues(form, { submitter }))
 						.toString();
@@ -240,7 +259,7 @@ describe('misc', () => {
 
 		it('should check for valid field elements value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const meter = document.getElementById('meter');
 					expect(getValue(meter)).toBe(5);
@@ -250,7 +269,7 @@ describe('misc', () => {
 
 		it('should check for invalid field elements value', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					expect(getValue(document.body)).toBe(null);
 				},
@@ -259,7 +278,7 @@ describe('misc', () => {
 
 		it('should check for elements as included fields', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const input = document.getElementById('input');
 					expect(isElementValueIncludedInFormSubmit(input)).toBe(true);
@@ -269,7 +288,7 @@ describe('misc', () => {
 
 		it('should check for elements as excluded fields', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const notField = document.getElementById('notField');
 					expect(isElementValueIncludedInFormSubmit(notField)).toBe(false);
@@ -283,7 +302,7 @@ describe('misc', () => {
 
 		it('should check for elements as valid for fields', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const input = document.getElementById('input');
 					expect(isFieldElement(input)).toBe(true);
@@ -295,7 +314,7 @@ describe('misc', () => {
 
 		it('should check for elements as invalid for fields', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const meter = document.getElementById('meter');
 					expect(isFieldElement(meter)).toBe(false);
@@ -325,7 +344,7 @@ describe('misc', () => {
 
 		it('should parse string values for setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -342,7 +361,7 @@ describe('misc', () => {
 
 		it('should parse entries values for setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -359,7 +378,7 @@ describe('misc', () => {
 
 		it('should parse URLSearchParams values for setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -376,7 +395,7 @@ describe('misc', () => {
 
 		it('should parse object values for setFormValues', () => {
 			utils.test({
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					let isThrown = false;
 					try {
@@ -389,6 +408,52 @@ describe('misc', () => {
 					expect(getFormValues(form)).toEqual({ foobar: 'baz', });
 				},
 			})
+		});
+	});
+
+
+	describe('clearing values', () => {
+		beforeEach(utils.setup(`
+			<!DOCTYPE html>
+			<html lang="en-PH">
+				<head>
+					<meta charset="UTF-8">
+					<title>Misc/Blank</title>
+				</head>
+				<body>
+					<form>
+						<input type="text" name="foobar" value="value1" />
+						<input type="text" name="foobar" value="value2" />
+						<input type="text" name="baz" value="value3" />
+						<input type="text" name="bar" value="value1" />
+						<input type="text" name="bar" value="value2" />
+						<input type="radio" name="foo" value="value1" checked />
+						<input type="radio" name="foo" value="value2" />
+						<input type="radio" name="foo" value="value3" />
+						<button type="submit">Submit</button>
+					</form>
+				</body>
+			</html>
+		`));
+
+		it('should clear all values given a single key', () => {
+			utils.test({
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					clearFormValues(form, 'foobar');
+					expect(getFormValues(form)).toEqual({ foobar: ['', ''], baz: 'value3', bar: ['value1', 'value2'], foo: 'value1', });
+				},
+			});
+		});
+
+		it('should clear all values given multiple keys', () => {
+			utils.test({
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
+				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
+					clearFormValues(form, ['foobar', 'bar', 'foo']);
+					expect(getFormValues(form)).toEqual({ foobar: ['', ''], baz: 'value3', bar: ['', ''], });
+				},
+			});
 		});
 	});
 
@@ -416,7 +481,7 @@ describe('misc', () => {
 				onLoaded: (form: HTMLFormElement) => {
 					setFormValues(form, { foobar: ['foo', 'bar', 'baz']})
 				},
-				actionBeforeSubmit: (cy: any) => cy.get('[type="submit"]'),
+				querySubmitter: (cy: any) => cy.get('[type="submit"]'),
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					expect(getFormValues(form)).toEqual({ foobar: ['foo', 'bar', 'baz'], });
 				},

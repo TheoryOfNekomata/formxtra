@@ -147,6 +147,7 @@ These are all the exported methods in the library:
 import {
   getFormValues,
   setFormValues,
+  clearFormValues,
   getValue,
   isElementValueIncludedInFormSubmit,
   isFieldElement,
@@ -165,8 +166,10 @@ See the [documentation folder](https://code.modal.sh/TheoryOfNekomata/formxtra/s
 on this library.
 
 You may need the [event-submitter-polyfill package](https://github.com/idea2app/event-submitter-polyfill) for browsers
-that do not support the submitter property on submit events (such as Safari). The submitter element is needed for
+that do not support the submitter property on submit events. The submitter element is needed for
 tracking which button triggered a form submission, and it may contain `name` and `value` attributes which are used to
-add values to the form (such as specifying which action to take for the rest of the form values).
+add values to the form (such as specifying which action to take for the rest of the form values). Refer to the
+[usability table for `SubmitEvent.submitter`](https://caniuse.com/mdn-api_submitevent_submitter) to check if your target
+browser is supported.
 
 The sources are under the [MIT license](https://code.modal.sh/TheoryOfNekomata/formxtra/raw/branch/master/LICENSE).

@@ -102,12 +102,10 @@ const setTextAreaFieldValue = (
   elementsOfSameName: HTMLTextAreaElement[],
 ) => {
   if (Array.isArray(value) && elementsOfSameName.length > 1) {
-    // eslint-disable-next-line no-param-reassign
     textareaEl.value = value[nthOfName];
     return;
   }
 
-  // eslint-disable-next-line no-param-reassign
   textareaEl.value = value as string;
 };
 
@@ -146,7 +144,6 @@ const setSelectFieldValue = (
       // If this happens, all values must correspond to a <select multiple> element.
       const currentValue = valueArray[nthOfName] as string[];
       Array.from(selectEl.options).forEach((el) => {
-        // eslint-disable-next-line no-param-reassign
         el.selected = currentValue.includes(el.value);
       });
       return;
@@ -157,14 +154,12 @@ const setSelectFieldValue = (
 
     if (elementsOfSameName.some((el) => el.multiple)) {
       Array.from(selectEl.options).forEach((el) => {
-        // eslint-disable-next-line no-param-reassign
         el.selected = (value as string[]).includes(el.value);
       });
       return;
     }
 
     Array.from(selectEl.options).forEach((el) => {
-      // eslint-disable-next-line no-param-reassign
       el.selected = el.value === (value as string[])[nthOfName];
     });
 
@@ -172,7 +167,6 @@ const setSelectFieldValue = (
   }
 
   Array.from(selectEl.options).forEach((el) => {
-    // eslint-disable-next-line no-param-reassign
     el.selected = Array.isArray(value)
       ? (value as string[]).includes(el.value)
       : el.value === value;
@@ -218,14 +212,12 @@ const setInputRadioFieldValue = (
   const valueWhenChecked = inputEl.getAttribute(ATTRIBUTE_VALUE);
 
   if (valueWhenChecked !== null) {
-    // eslint-disable-next-line no-param-reassign
     inputEl.checked = (
       Array.isArray(value) ? valueWhenChecked === value.slice(-1)[0] : valueWhenChecked === value
     );
     return;
   }
 
-  // eslint-disable-next-line no-param-reassign
   inputEl.checked = (
     Array.isArray(value) ? value.includes('on') : value === 'on'
   );
@@ -346,7 +338,6 @@ const setInputCheckboxFieldValue = (
   const valueWhenChecked = inputEl.getAttribute(ATTRIBUTE_VALUE);
 
   if (valueWhenChecked !== null) {
-    // eslint-disable-next-line no-param-reassign
     inputEl.checked = (
       Array.isArray(value)
         ? value.includes(valueWhenChecked)
@@ -357,7 +348,6 @@ const setInputCheckboxFieldValue = (
 
   const newValue = parseBooleanValues(value);
   if (typeof newValue === 'boolean') {
-    // eslint-disable-next-line no-param-reassign
     inputEl.checked = newValue;
   }
 };
@@ -472,7 +462,6 @@ const setInputNumericFieldValue = (
   elementsWithSameName: HTMLInputNumericElement[],
 ) => {
   const valueArray = Array.isArray(value) ? value : [value];
-  // eslint-disable-next-line no-param-reassign
   inputEl.valueAsNumber = Number(valueArray[elementsWithSameName.length > 1 ? nthOfName : 0]);
 };
 
@@ -579,7 +568,6 @@ const setInputDateLikeFieldValue = (
   const elementIndex = hasMultipleElementsOfSameName ? nthOfName : 0;
 
   if (inputEl.type.toLowerCase() === INPUT_TYPE_DATE) {
-    // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(
       valueArray[elementIndex] as ConstructorParameters<typeof Date>[0],
     )
@@ -589,7 +577,6 @@ const setInputDateLikeFieldValue = (
   }
 
   if (inputEl.type.toLowerCase() === INPUT_TYPE_DATETIME_LOCAL) {
-    // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(
       valueArray[elementIndex] as ConstructorParameters<typeof Date>[0],
     )
@@ -598,7 +585,6 @@ const setInputDateLikeFieldValue = (
   }
 
   if (inputEl.type.toLowerCase() === INPUT_TYPE_MONTH) {
-    // eslint-disable-next-line no-param-reassign
     inputEl.value = new Date(
       valueArray[elementIndex] as ConstructorParameters<typeof Date>[0],
     )
@@ -765,12 +751,10 @@ const setInputHiddenFieldValue = (
   }
 
   if (Array.isArray(value) && elementsWithSameName.length > 1) {
-    // eslint-disable-next-line no-param-reassign
     inputEl.value = value[nthOfName];
     return;
   }
 
-  // eslint-disable-next-line no-param-reassign
   inputEl.value = value as string;
 };
 
@@ -866,12 +850,10 @@ const setInputGenericFieldValue = (
   elementsWithSameName: HTMLInputElement[],
 ) => {
   if (Array.isArray(value) && elementsWithSameName.length > 1) {
-    // eslint-disable-next-line no-param-reassign
     inputEl.value = value[nthOfName];
     return;
   }
 
-  // eslint-disable-next-line no-param-reassign
   inputEl.value = value as string;
 };
 
@@ -1157,11 +1139,6 @@ export const getFormValues = (form: HTMLFormElement, options = {} as GetFormValu
         ...theFormValues,
         [fieldName]: fieldValue,
       };
-
-      // return {
-      //   ...theFormValues,
-      //   [fieldName]: [...oldFormValue, fieldValue],
-      // };
     },
     {} as Record<string, unknown>,
   );
@@ -1202,56 +1179,19 @@ const normalizeValues = (values: unknown): Record<string, unknown | unknown[]> =
 };
 
 /**
- * Sets the values of all the fields within the form through accessing the DOM nodes. Partial values
- * may be passed to set values only to certain form fields.
- * @param form - The form.
- * @param values - The form values.
+ * Performs setting of form values.
+ * @param fieldElementEntries - Entries of field names and their corresponding elements.
+ * @param elementsWithSameName - Map of field names to elements or array of elements if they have
+ * duplicates.
+ * @param objectValues - Values to apply to the form.
  */
-export const setFormValues = (
-  form: HTMLFormElement,
-  values: unknown,
+const doSetFormValues = (
+  fieldElementEntries: [string, HTMLElementWithName][],
+  elementsWithSameName: Record<string, HTMLElement[]>,
+  objectValues: Record<string, unknown>,
 ) => {
-  assertIsFormElement(form, 'getFormValues');
-
-  const valuesType = typeof values;
-  if (!['string', 'object'].includes(valuesType)) {
-    throw new TypeError(`Invalid values argument provided for setFormValues(). Expected "object" or "string", got ${valuesType}`);
-  }
-
-  if (!values) {
-    return;
-  }
-
-  const fieldElements = filterFieldElements(form);
-  const objectValues = normalizeValues(values);
-
-  const elementsWithSameName = fieldElements
-    .filter(([, el]) => el.name in objectValues)
-    .reduce(
-      (currentCount, [, el]) => {
-        if (el.tagName === TAG_NAME_INPUT && el.type === INPUT_TYPE_RADIO) {
-          return {
-            ...currentCount,
-            [el.name]: [el],
-          };
-        }
-
-        return {
-          ...currentCount,
-          [el.name]: (
-            Array.isArray(currentCount[el.name])
-              ? [...currentCount[el.name], el]
-              : [el]
-          ),
-        };
-      },
-      {} as Record<string, HTMLElement[]>,
-    );
-
   const nthElementOfName = {} as Record<string, number>;
-
-  fieldElements
-    .filter(([, el]) => el.name in objectValues)
+  fieldElementEntries
     .forEach(([, el]) => {
       nthElementOfName[el.name] = (
         typeof nthElementOfName[el.name] === 'number'
@@ -1269,6 +1209,90 @@ export const setFormValues = (
 };
 
 /**
+ * Builds a map of field names with elements that may contain duplicates.
+ * @param fieldElementEntries - Entries of field names and their corresponding elements.
+ * @returns The map of field names to elements or array of elements if they have duplicates.
+ */
+const getElementsOfSameName = (fieldElementEntries: [string, HTMLElementWithName][]) => (
+  fieldElementEntries.reduce(
+    (currentCount, [, el]) => {
+      if (el.tagName === TAG_NAME_INPUT && el.type === INPUT_TYPE_RADIO) {
+        return {
+          ...currentCount,
+          [el.name]: [el],
+        };
+      }
+
+      return {
+        ...currentCount,
+        [el.name]: (
+          Array.isArray(currentCount[el.name])
+            ? [...currentCount[el.name], el]
+            : [el]
+        ),
+      };
+    },
+    {} as Record<string, HTMLElement[]>,
+  )
+);
+
+/**
+ * Sets the values of all the fields within the form through accessing the DOM nodes. Partial values
+ * may be passed to set values only to certain form fields.
+ * @param form - The form.
+ * @param values - The form values.
+ */
+export const setFormValues = (
+  form: HTMLFormElement,
+  values: unknown,
+) => {
+  assertIsFormElement(form, 'getFormValues');
+  const valuesType = typeof values;
+  if (!['string', 'object'].includes(valuesType)) {
+    throw new TypeError(`Invalid values argument provided for setFormValues(). Expected "object" or "string", got ${valuesType}`);
+  }
+
+  if (!values) {
+    // reject `null`
+    return;
+  }
+
+  const objectValues = normalizeValues(values);
+  const fieldElements = filterFieldElements(form);
+  const filteredFieldElements = fieldElements.filter(([, el]) => el.name in objectValues);
+  const elementsWithSameName = getElementsOfSameName(filteredFieldElements);
+  doSetFormValues(filteredFieldElements, elementsWithSameName, objectValues);
+};
+
+/**
+ * Clears the values of all the fields within the form through accessing the DOM nodes. Partial
+ * values may be passed to set values only to certain form fields.
+ *
+ * **Note:** This does not reset the inputs' values, instead only unsets them.
+ *
+ * @param form - The form.
+ * @param fieldNames - The field names to clear their corresponding element(s).
+ */
+export const clearFormValues = (
+  form: HTMLFormElement,
+  fieldNames: string | string[],
+) => {
+  assertIsFormElement(form, 'clearFormValues');
+  const fieldNamesNormalized = Array.isArray(fieldNames) ? fieldNames : [fieldNames];
+  const fieldElements = filterFieldElements(form);
+  const filteredFieldElements = fieldElements.filter(
+    ([, el]) => fieldNamesNormalized.includes(el.name),
+  );
+  const elementsWithSameName = getElementsOfSameName(filteredFieldElements);
+  const objectValues = Object.fromEntries(
+    Object.entries(elementsWithSameName).map(([key]) => [
+      key, '',
+    ]),
+  );
+  doSetFormValues(filteredFieldElements, elementsWithSameName, objectValues);
+};
+
+/**
  * Gets the values of all the fields within the form through accessing the DOM nodes.
  * @deprecated Default import is deprecated. Use named export `getFormValues()` instead. This
  * default export is only for backwards compatibility.
@@ -1276,7 +1300,7 @@ export const setFormValues = (
  * @see getFormValues
  */
 export default (...args: Parameters<typeof getFormValues>) => {
-  // eslint-disable-next-line no-console
-  console.warn('Default import is deprecated. Use named export `getFormValues()` instead. This default export is only for backwards compatibility.');
+  const logger = typeof console !== 'undefined' ? console : undefined;
+  logger?.warn?.('Default import is deprecated. Use named export `getFormValues()` instead. This default export is only for backwards compatibility.');
   return getFormValues(...args);
 };
