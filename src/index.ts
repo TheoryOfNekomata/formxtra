@@ -1019,6 +1019,36 @@ const ATTRIBUTE_DISABLED = 'disabled' as const;
 const NAME_ATTRIBUTE_VALUE_ISINDEX = 'isindex' as const;
 
 /**
+ * Determines is an element is a descendant of a disabled <fieldset> element.
+ * @param el - The element.
+ * @returns Value determining if element is a descendant of a disabled <fieldset> element.
+ */
+const isElementDescendantOfDisabledFieldset = (el: HTMLElement) => {
+  const elementAncestors = [] as HTMLElement[];
+  let currentParentElement = el.parentElement;
+  while (currentParentElement !== null) {
+    if (currentParentElement) {
+      elementAncestors.push(currentParentElement);
+    }
+    currentParentElement = currentParentElement?.parentElement ?? null;
+  }
+  return elementAncestors.some((fieldset) => (
+    fieldset.tagName === 'FIELDSET'
+    && Boolean((fieldset as HTMLFieldSetElement)[ATTRIBUTE_DISABLED])
+  ));
+};
+
+/**
+ * Determines if an element is disabled.
+ * @param el - The element.
+ * @returns Value determining if element is disabled.
+ */
+const isElementDisabled = (el: HTMLElement) => (
+  (ATTRIBUTE_DISABLED in el && Boolean(el[ATTRIBUTE_DISABLED]))
+  || isElementDescendantOfDisabledFieldset(el)
+);
+
+/**
  * Determines if an element's value is included when its form is submitted.
  * @param el - The element.
  * @param includeDisabled - Should we include disabled field elements?
@@ -1030,7 +1060,7 @@ export const isElementValueIncludedInFormSubmit = (el: HTMLElement, includeDisab
     typeof namedEl[ATTRIBUTE_NAME] === 'string'
     && namedEl[ATTRIBUTE_NAME].length > 0
     && namedEl[ATTRIBUTE_NAME] !== NAME_ATTRIBUTE_VALUE_ISINDEX
-    && (includeDisabled || !(ATTRIBUTE_DISABLED in namedEl && Boolean(namedEl[ATTRIBUTE_DISABLED])))
+    && (includeDisabled || !(isElementDisabled(el)))
     && isFieldElement(namedEl as unknown as HTMLElement)
   );
 };
