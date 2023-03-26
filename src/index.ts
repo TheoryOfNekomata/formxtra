@@ -39,7 +39,7 @@ const FORM_FIELD_ELEMENT_TAG_NAMES = [TAG_NAME_SELECT, TAG_NAME_TEXTAREA] as con
 /**
  * Types for button-like `<input>` elements that are not considered as a form field.
  */
-const FORM_FIELD_INPUT_EXCLUDED_TYPES = ['submit', 'reset'] as const;
+const FORM_FIELD_INPUT_EXCLUDED_TYPES = ['submit', 'reset', 'image'] as const;
 
 /**
  * Checks if an element can hold a custom (user-inputted) field value.
