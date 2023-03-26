@@ -666,16 +666,17 @@ const getInputTextualFieldValue = (
   inputEl: HTMLInputTextualElement,
   options = {} as GetInputTextualFieldValueOptions,
 ) => {
-  if (
-    options.includeDirectionality
-    && typeof window !== 'undefined'
-    && typeof window.getComputedStyle === 'function'
-    && typeof (inputEl.dirName as unknown) === 'string'
-  ) {
+  if (options.includeDirectionality) {
     return new TextualValueString(
       inputEl.value,
       inputEl.dirName,
-      window.getComputedStyle(inputEl).direction || 'ltr',
+      (
+        typeof window !== 'undefined'
+        && typeof window.getComputedStyle === 'function'
+        && typeof (inputEl.dirName as unknown) === 'string'
+          ? window.getComputedStyle(inputEl).direction || 'ltr'
+          : inputEl.dir
+      ),
     );
   }
 
