@@ -1311,9 +1311,7 @@ export const clearFormValues = (
   );
   const elementsWithSameName = getElementsOfSameName(filteredFieldElements);
   const objectValues = Object.fromEntries(
-    Object.entries(elementsWithSameName).map(([key]) => [
-      key, '',
-    ]),
+    Object.entries(elementsWithSameName).map(([key]) => [key, null]),
   );
   doSetFormValues(filteredFieldElements, elementsWithSameName, objectValues);
 };
