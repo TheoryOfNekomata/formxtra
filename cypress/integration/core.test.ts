@@ -251,6 +251,7 @@ describe('misc', () => {
 						<input id="notField" type="text" />
 						<input id="disabled" disabled type="text" name="disabled" />
 						<meter id="meter" min="1" max="10" value="5" />
+						<output id="output" name="random">5</output>
 						<button type="submit">Submit</button>
 					</form>
 				</body>
@@ -263,6 +264,8 @@ describe('misc', () => {
 				onSubmitted: (form: HTMLFormElement, submitter: any, search: any) => {
 					const meter = document.getElementById('meter');
 					expect(getValue(meter)).toBe(5);
+					const output = document.getElementById('output');
+					expect(getValue(output)).toBe('5');
 				},
 			});
 		});
