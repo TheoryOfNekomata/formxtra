@@ -287,6 +287,11 @@ const getInputCheckboxFieldValue = (
   return null;
 };
 
+/**
+ * Parses values that can be candidates for a Boolean value.
+ * @param value - A value.
+ * @returns The corresponding Boolean value.
+ */
 const parseBooleanValues = (value: unknown) => {
   if (typeof value === 'boolean') {
     return value;
@@ -630,9 +635,18 @@ type GetInputTextualFieldValueOptions = {
   includeDirectionality?: true;
 }
 
+/**
+ * Class for overloading a string with directionality information.
+ */
 class TextualValueString extends String {
+  /**
+   * The form name of the directionality value.
+   */
   readonly dirName: string;
 
+  /**
+   * The directionality value.
+   */
   readonly dir: string;
 
   constructor(value: unknown, dirName: string, dir: string) {
