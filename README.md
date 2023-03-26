@@ -172,4 +172,7 @@ add values to the form (such as specifying which action to take for the rest of 
 [usability table for `SubmitEvent.submitter`](https://caniuse.com/mdn-api_submitevent_submitter) to check if your target
 browser is supported.
 
+There is no support for `<input type="image">` elements. It is recommended to handle the XY coordinates tracking
+separately as mouse events when using said elements as submitters.
+
 The sources are under the [MIT license](https://code.modal.sh/TheoryOfNekomata/formxtra/raw/branch/master/LICENSE).
